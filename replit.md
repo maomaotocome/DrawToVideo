@@ -1,10 +1,10 @@
-# Draw to Video - Interactive Video Generation Platform
+# Draw to Video - Professional Cinema-Grade Video Generation Platform
 
 ## Overview
 
-Draw to Video is a React-based web application that allows users to create AI-generated videos through visual interaction. Users upload an image and draw annotations (arrows, shapes, text) directly on the canvas to guide video generation. The platform addresses the limitations of text-to-video AI tools by providing an intuitive, visual approach to content creation that eliminates prompt engineering frustration.
+Draw to Video is a professional-grade React-based web application that transforms sketches into cinematic AI-generated videos. Designed to compete with industry leaders like Higgsfield AI, the platform offers zero-prompt visual direction, 50+ professional camera presets, and Hollywood-style motion controls. Users upload images and draw movement instructions directly on a professional canvas to guide video generation without any text prompts.
 
-The application serves content creators, educators, marketers, and filmmakers who need precise control over AI video generation without technical expertise. Key features include drag-and-drop image upload, interactive canvas with drawing tools, real-time annotation tracking, and high-quality video output.
+The application targets content creators, filmmakers, marketers, and visual artists who demand cinema-quality AI video generation. Key features include modern gradient dark theme UI, professional drawing tools with sequence numbering (1,2,3), 50+ camera movement presets (dolly shots, crane movements, FPV drone footage), and instant HD video generation.
 
 ## User Preferences
 
@@ -13,13 +13,14 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend Architecture
-- **Framework**: React 18 with TypeScript and Vite for fast development
-- **UI Components**: shadcn/ui component library built on Radix UI primitives
-- **Styling**: Tailwind CSS with custom design system and CSS variables
+- **Framework**: React 18 with TypeScript and Vite for lightning-fast development
+- **UI Design**: Professional gradient dark theme matching industry standards (Higgsfield-inspired)
+- **UI Components**: shadcn/ui component library with custom cinema-grade styling
+- **Styling**: Tailwind CSS with dark theme variables and gradient designs
 - **State Management**: TanStack Query for server state and React hooks for local state
 - **Routing**: Wouter for lightweight client-side routing
-- **Canvas Implementation**: HTML5 Canvas API for drawing interactions
-- **File Upload**: Uppy.js with dashboard modal for file management
+- **Professional Canvas**: HTML5 Canvas with sequence numbering, 50+ camera presets, and motion tracking
+- **File Upload**: Drag-and-drop with professional upload interface
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express server
@@ -39,12 +40,14 @@ Preferred communication style: Simple, everyday language.
 - **File Security**: Presigned URLs for secure upload/download operations
 - **API Protection**: Middleware-based request validation and error handling
 
-### Canvas and Annotation System
-- **Drawing Tools**: Select, pen, arrow, text, rectangle, and circle tools
-- **Annotation Types**: Structured annotation objects with type-specific data
-- **Real-time Updates**: Optimistic updates with server synchronization
-- **Undo/Redo**: Canvas history management for user actions
-- **Export**: Canvas-to-image conversion for AI processing
+### Professional Canvas and Motion System
+- **Zero-Prompt Interface**: Pure visual direction without text input requirements
+- **Professional Tools**: Select, movement arrows, action text, focus circles, frame rectangles
+- **Sequence Numbering**: 1,2,3 annotation system for action ordering
+- **50+ Camera Presets**: Dolly shots, pan movements, tilt sequences, Dutch angles, crane shots
+- **Motion Tracking**: Arrow-based movement paths with gradient styling and shadows
+- **Real-time Rendering**: Optimistic canvas updates with professional visual feedback
+- **Cinema-Grade Output**: HD video generation with professional camera movements
 
 ## External Dependencies
 
