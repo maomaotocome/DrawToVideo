@@ -15,6 +15,7 @@ export const projects = pgTable("projects", {
   originalImageUrl: text("original_image_url").notNull(),
   annotatedImageUrl: text("annotated_image_url"),
   videoUrl: text("video_url"),
+  generationId: text("generation_id"), // For tracking video generation status
   annotations: jsonb("annotations").default({}),
   status: text("status").notNull().default("created"), // created, processing, completed, failed
   createdAt: timestamp("created_at").defaultNow(),

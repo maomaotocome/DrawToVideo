@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { CanvasToolbar } from "@/components/CanvasToolbar";
+import { VideoPlayer } from "@/components/VideoPlayer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -50,8 +51,8 @@ export function PhotoCanvas({ projectId, onStartOver }: PhotoCanvasProps) {
     onSuccess: () => {
       setShowResult(true);
       toast({
-        title: "Video generation started!",
-        description: "Your video will be ready in a few seconds.",
+        title: "视频生成开始了！",
+        description: "AI正在分析你的绘制指令，预计需要12-20分钟。",
       });
     },
     onError: () => {
@@ -64,11 +65,11 @@ export function PhotoCanvas({ projectId, onStartOver }: PhotoCanvasProps) {
   });
 
   useEffect(() => {
-    if (project?.status === 'completed' && project.videoUrl) {
-      setVideoUrl(project.videoUrl);
+    if (project && 'status' in project && project.status === 'completed' && 'videoUrl' in project && project.videoUrl) {
+      setVideoUrl(project.videoUrl as string);
       toast({
-        title: "Video ready!",
-        description: "Your animated video has been generated successfully.",
+        title: "视频生成完成！",
+        description: "你的动画视频已经成功生成。",
       });
     }
   }, [project, toast]);
@@ -94,7 +95,9 @@ export function PhotoCanvas({ projectId, onStartOver }: PhotoCanvasProps) {
         drawAnnotation(ctx, annotation);
       });
     };
-    img.src = project.originalImageUrl;
+    if (project && 'originalImageUrl' in project) {
+      img.src = project.originalImageUrl as string;
+    }
   }, [project, annotations]);
 
   const drawAnnotation = (ctx: CanvasRenderingContext2D, annotation: CanvasAnnotation) => {
@@ -344,57 +347,11 @@ export function PhotoCanvas({ projectId, onStartOver }: PhotoCanvasProps) {
         </header>
 
         <div className="max-w-4xl mx-auto py-20 px-4">
-          {project?.status === 'processing' ? (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <div className="animate-spin w-16 h-16 border-4 border-primary border-t-transparent rounded-full mx-auto mb-6"></div>
-                <h3 className="text-2xl font-semibold text-slate-text mb-2">Generating Your Video...</h3>
-                <p className="text-muted-foreground">This usually takes 10-30 seconds</p>
-                <div className="w-full bg-muted rounded-full h-2 mt-6">
-                  <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '45%' }}></div>
-                </div>
-              </CardContent>
-            </Card>
-          ) : project?.status === 'completed' && videoUrl ? (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <div className="bg-secondary/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Sparkles className="w-8 h-8 text-secondary" />
-                </div>
-                <h3 className="text-2xl font-semibold text-slate-text mb-2">Video Generated Successfully!</h3>
-                <p className="text-muted-foreground mb-6">Your animated video is ready to download</p>
-                
-                <div className="bg-muted rounded-xl p-8 mb-6">
-                  <div className="text-6xl mb-4">🎬</div>
-                  <p className="text-muted-foreground">Video preview would appear here</p>
-                  <p className="text-sm text-muted-foreground mt-2">MP4 • HD Quality • Based on your annotations</p>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button className="bg-secondary hover:bg-secondary/90 text-white">
-                    <Download className="w-4 h-4 mr-2" />
-                    Download Video
-                  </Button>
-                  <Button variant="outline" onClick={onStartOver}>
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Try Another Photo
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <div className="text-destructive text-6xl mb-6">⚠️</div>
-                <h3 className="text-2xl font-semibold text-slate-text mb-2">Generation Failed</h3>
-                <p className="text-muted-foreground mb-6">Something went wrong while generating your video.</p>
-                <Button onClick={onStartOver}>
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Try Again
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+          <VideoPlayer
+            videoUrl={project && 'videoUrl' in project ? project.videoUrl as string : undefined}
+            status={(project && 'status' in project ? project.status : "created") as "created" | "processing" | "completed" | "failed"}
+            onRegenerateVideo={() => generateVideoMutation.mutate()}
+          />
         </div>
       </div>
     );

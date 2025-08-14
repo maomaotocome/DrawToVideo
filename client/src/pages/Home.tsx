@@ -52,7 +52,9 @@ export default function Home() {
     if (result.successful && result.successful.length > 0) {
       const uploadedFile = result.successful[0];
       const imageUrl = uploadedFile.uploadURL;
-      createProjectMutation.mutate(imageUrl);
+      if (imageUrl) {
+        createProjectMutation.mutate(imageUrl);
+      }
     }
   };
 

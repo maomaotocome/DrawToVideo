@@ -4,9 +4,61 @@ import { storage } from "./storage";
 import { ObjectStorageService } from "./objectStorage";
 import { insertProjectSchema } from "@shared/schema";
 import { z } from "zod";
+import { HiggsfieldVideoService, createDemoVideo } from "./videoGeneration";
+
+// Helper function to convert annotations to descriptive prompt
+function generatePromptFromAnnotations(annotations: any[]): string {
+  if (!annotations || annotations.length === 0) {
+    return "Create a cinematic video with smooth camera movement and natural motion";
+  }
+
+  const prompts: string[] = [];
+  
+  for (const annotation of annotations) {
+    switch (annotation.type) {
+      case 'arrow':
+        const direction = getArrowDirection(annotation);
+        prompts.push(`camera moves ${direction} with smooth motion`);
+        break;
+      case 'text':
+        if (annotation.text) {
+          prompts.push(annotation.text);
+        }
+        break;
+      case 'circle':
+        prompts.push("focus on the highlighted area with dramatic emphasis");
+        break;
+      case 'rectangle':
+        prompts.push("emphasize the selected region with cinematic framing");
+        break;
+    }
+  }
+
+  const combinedPrompt = prompts.length > 0 
+    ? prompts.join(", ") + ". Create a high-quality cinematic video with smooth transitions."
+    : "Create a cinematic video with smooth camera movement and natural motion";
+
+  return combinedPrompt;
+}
+
+function getArrowDirection(arrow: any): string {
+  if (!arrow.endX || !arrow.endY || !arrow.startX || !arrow.startY) {
+    return "forward";
+  }
+  
+  const deltaX = arrow.endX - arrow.startX;
+  const deltaY = arrow.endY - arrow.startY;
+  
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    return deltaX > 0 ? "right" : "left";
+  } else {
+    return deltaY > 0 ? "down" : "up";
+  }
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const objectStorageService = new ObjectStorageService();
+  const videoService = new HiggsfieldVideoService();
 
   // Get upload URL for project images
   app.post("/api/images/upload", async (req, res) => {
@@ -97,22 +149,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update status to processing
       await storage.updateProjectStatus(req.params.id, "processing");
 
-      // Simulate video generation (in real implementation, this would call AI service)
-      setTimeout(async () => {
+      // Start video generation in background
+      const generateVideo = async () => {
         try {
-          // In production, this would generate actual video
-          const mockVideoUrl = "/objects/uploads/mock-video-" + project.id + ".mp4";
-          await storage.updateProject(req.params.id, {
-            videoUrl: mockVideoUrl,
-            status: "completed"
+          // Convert annotations to a descriptive prompt
+          const prompt = generatePromptFromAnnotations(project.annotations as any[]);
+          
+          // Get the full URL for the image
+          const baseUrl = req.protocol + '://' + req.get('host');
+          const imageUrl = project.originalImageUrl.startsWith('http') 
+            ? project.originalImageUrl 
+            : baseUrl + project.originalImageUrl;
+
+          console.log(`Generating video for project ${project.id} with prompt: "${prompt}"`);
+
+          // Try real API first, fallback to demo if no API key
+          const result = await videoService.generateVideo({
+            imageUrl,
+            prompt,
+            duration: 8,
+            resolution: '720p',
+            aspectRatio: '16:9',
+            style: 'realistic'
           });
+
+          if (result.success && result.generationId) {
+            // Store generation ID for status checking
+            await storage.updateProject(req.params.id, {
+              generationId: result.generationId,
+              status: "processing"
+            });
+
+            // Wait for completion
+            const finalResult = await videoService.waitForCompletion(result.generationId);
+            
+            if (finalResult.success && finalResult.videoUrl) {
+              await storage.updateProject(req.params.id, {
+                videoUrl: finalResult.videoUrl,
+                status: "completed"
+              });
+              console.log(`Video generation completed for project ${project.id}: ${finalResult.videoUrl}`);
+            } else {
+              throw new Error(finalResult.error || 'Video generation failed');
+            }
+          } else {
+            // Fallback to demo video if API is not available
+            console.log(`Using demo video for project ${project.id} - API not available`);
+            const demoResult = createDemoVideo();
+            await storage.updateProject(req.params.id, {
+              videoUrl: demoResult.videoUrl,
+              status: "completed"
+            });
+          }
         } catch (error) {
           console.error("Error in video generation:", error);
           await storage.updateProjectStatus(req.params.id, "failed");
         }
-      }, 3000);
+      };
 
-      res.json({ message: "Video generation started", projectId: req.params.id });
+      // Run video generation asynchronously
+      generateVideo();
+
+      res.json({ 
+        message: "Video generation started", 
+        projectId: req.params.id,
+        estimatedTime: "12-20 minutes"
+      });
     } catch (error) {
       console.error("Error starting video generation:", error);
       res.status(500).json({ error: "Failed to start video generation" });
