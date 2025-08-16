@@ -252,7 +252,7 @@ export default function WorldClassLanding() {
               <Button 
                 variant="outline" 
                 size="lg"
-                className="border-2 border-white/30 text-white hover:bg-white/10 px-12 py-8 text-2xl h-auto font-bold backdrop-blur-sm hover:scale-105 transition-all duration-300"
+                className="bg-[#9c5af7] border-2 border-white/30 text-white hover:bg-white/10 px-12 py-8 text-2xl h-auto font-bold backdrop-blur-sm hover:scale-105 transition-all duration-300"
               >
                 <Play className="w-7 h-7 mr-4" />
                 Watch Demo
