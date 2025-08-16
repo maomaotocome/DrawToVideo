@@ -5,6 +5,7 @@ import { ObjectStorageService } from "./objectStorage";
 import { insertProjectSchema } from "@shared/schema";
 import { z } from "zod";
 import { ultimateVideoGeneration } from "./services/videoGeneration";
+import { directUploadHandler, handleDirectUpload } from "./routes/direct-upload";
 
 
 // Helper function to convert annotations to descriptive prompt
@@ -59,6 +60,9 @@ function getArrowDirection(arrow: any): string {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const objectStorageService = new ObjectStorageService();
+
+  // 直接上传端点 - 避免URL参数过长问题
+  app.post("/api/images/direct-upload", directUploadHandler, handleDirectUpload);
 
   // Get upload URL for project images
   app.post("/api/images/upload", async (req, res) => {

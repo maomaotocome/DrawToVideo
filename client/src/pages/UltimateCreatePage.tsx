@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { UltimateEffectSelector } from "@/components/UltimateEffectSelector";
 import { UltimateCanvasDrawing } from "@/components/UltimateCanvasDrawing";
 import { useUltimateVideo } from "@/hooks/useUltimateVideo";
+import { getUploadedImageFromSession, clearUploadedImageSession } from "@/components/ImageUploadHandler";
 import { 
   ArrowLeft, 
   Upload, 
@@ -63,6 +64,20 @@ export default function UltimateCreatePage() {
     resetGeneration
   } = useUltimateVideo();
 
+  // 检查是否有从落地页上传的图片
+  useEffect(() => {
+    const sessionImageUrl = getUploadedImageFromSession();
+    if (sessionImageUrl) {
+      setUploadedImageUrl(sessionImageUrl);
+      setCurrentStep("drawing");
+      clearUploadedImageSession(); // 使用后清理
+      toast({
+        title: "图片已加载",
+        description: "开始绘制运镜路径",
+      });
+    }
+  }, [toast]);
+
   // 示例图片
   const SAMPLE_IMAGES = [
     "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop",
@@ -74,29 +89,36 @@ export default function UltimateCreatePage() {
 
   // 文件上传处理
   const handleFileUpload = async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
-      const uploadResponse = await fetch('/api/images/upload', { method: 'POST' });
-      const { uploadURL } = await uploadResponse.json();
-      
-      const uploadResult = await fetch(uploadURL, {
-        method: 'PUT',
-        body: file
+      // 使用直接上传API
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('public', 'true');
+
+      const uploadResponse = await fetch('/api/images/direct-upload', { 
+        method: 'POST',
+        body: formData
       });
 
-      if (uploadResult.ok) {
-        const imageUrl = uploadURL.split('?')[0];
-        setUploadedImageUrl(imageUrl);
+      if (!uploadResponse.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const result = await uploadResponse.json();
+      
+      if (result.success) {
+        setUploadedImageUrl(result.publicUrl);
         setCurrentStep("drawing");
         
         toast({
           title: "图片上传成功",
           description: "现在开始绘制运镜路径",
         });
+      } else {
+        throw new Error(result.error || 'Upload failed');
       }
     } catch (error) {
+      console.error('Upload error:', error);
       toast({
         title: "上传失败",
         description: "请重试或选择示例图片",
