@@ -53,6 +53,11 @@ export default function UltimateCreatePage() {
   const [selectedEffect, setSelectedEffect] = useState<UltimateCameraEffect>("zoom_in");
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("");
   const [pathData, setPathData] = useState<PathPoint[]>([]);
+  
+  // Debug: Track path data changes
+  useEffect(() => {
+    console.log('Path data updated:', pathData.length, 'points');
+  }, [pathData]);
   const [dragActive, setDragActive] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -342,28 +347,29 @@ export default function UltimateCreatePage() {
             <div className="space-y-6">
               <UltimateCanvasDrawing
                 imageUrl={uploadedImageUrl}
-                pathData={pathData}
                 selectedEffect={selectedEffect}
                 onPathChange={setPathData}
                 isGenerating={isGenerating}
               />
               
-              {pathData.length > 0 && (
-                <div className="text-center space-y-3">
-                  <div className="text-sm text-gray-600">
-                    Path drawn with {pathData.length} points • Ready for camera effect
-                  </div>
-                  <AnimatedButton 
-                    onClick={() => setCurrentStep("effect")} 
-                    size="lg"
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                    scaleOnHover={true}
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Choose Camera Effect
-                  </AnimatedButton>
+              <div className="text-center space-y-3">
+                <div className="text-sm text-gray-600">
+                  {pathData.length > 0 
+                    ? `Path drawn with ${pathData.length} points • Ready for camera effect`
+                    : 'Draw a path on the image to continue'
+                  }
                 </div>
-              )}
+                <AnimatedButton 
+                  onClick={() => setCurrentStep("effect")} 
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  scaleOnHover={true}
+                  disabled={pathData.length === 0}
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Choose Camera Effect
+                </AnimatedButton>
+              </div>
             </div>
           )}
 
