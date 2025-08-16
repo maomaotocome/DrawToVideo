@@ -55,13 +55,42 @@ export default function WorldClassLanding() {
     }
   };
 
-  const handleFileUpload = (file: File) => {
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        window.location.href = `/create?image=${encodeURIComponent(e.target?.result as string)}`;
-      };
-      reader.readAsDataURL(file);
+  const handleFileUpload = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('请选择图片文件');
+      return;
+    }
+
+    try {
+      // 使用直接上传API
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('public', 'true');
+
+      const uploadResponse = await fetch('/api/images/direct-upload', { 
+        method: 'POST',
+        body: formData
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const result = await uploadResponse.json();
+      
+      if (result.success) {
+        // 存储图片URL到sessionStorage，避免URL参数
+        sessionStorage.setItem('uploadedImageUrl', result.publicUrl);
+        sessionStorage.setItem('uploadTimestamp', Date.now().toString());
+        
+        // 直接跳转，无URL参数
+        window.location.href = '/create';
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('图片上传失败，请重试');
     }
   };
 

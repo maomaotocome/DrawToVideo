@@ -20,7 +20,7 @@ const upload = multer({
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error('只支持图片文件'), false);
+      cb(null, false);
     }
   }
 });
@@ -45,23 +45,30 @@ export async function handleDirectUpload(req: Request, res: Response) {
     const fullPath = `${folderPath}/${fileName}`;
 
     // 上传到对象存储
-    const uploadResult = await objectStorage.uploadBuffer(
-      req.file.buffer,
-      fullPath,
-      req.file.mimetype,
-      isPublic
-    );
+    const uploadURL = await objectStorage.getObjectEntityUploadURL();
+    
+    // 使用获取的预签名URL上传文件
+    const uploadResponse = await fetch(uploadURL, {
+      method: 'PUT',
+      body: req.file.buffer,
+      headers: {
+        'Content-Type': req.file.mimetype
+      }
+    });
 
-    if (uploadResult.success) {
+    if (uploadResponse.ok) {
+      // 构造公开访问URL
+      const publicUrl = uploadURL.split('?')[0]; // 移除查询参数获取纯URL
+      
       return res.json({
         success: true,
-        publicUrl: uploadResult.publicUrl,
+        publicUrl: publicUrl,
         fileName: fileName,
         fileSize: req.file.size,
         mimeType: req.file.mimetype
       });
     } else {
-      throw new Error(uploadResult.error || '上传失败');
+      throw new Error('上传到存储失败');
     }
 
   } catch (error) {
