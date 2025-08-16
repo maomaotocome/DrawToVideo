@@ -181,12 +181,12 @@ export function UltimateCanvasDrawing({
     }
   }, [pathData, pathOpacity]);
 
-  // 重绘画布
+  // Redraw canvas
   useEffect(() => {
     drawPath();
   }, [drawPath]);
 
-  // 鼠标/触摸事件处理
+  // Mouse/touch event handling
   const getPointFromEvent = useCallback((e: MouseEvent | TouchEvent, canvas: HTMLCanvasElement) => {
     const rect = canvas.getBoundingClientRect();
     let clientX: number, clientY: number;
@@ -239,23 +239,23 @@ export function UltimateCanvasDrawing({
     setIsDrawing(false);
   }, []);
 
-  // 绑定事件监听器
+  // Bind event listeners
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // 鼠标事件
+    // Mouse events
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mouseleave', stopDrawing);
 
-    // 触摸事件
+    // Touch events
     canvas.addEventListener('touchstart', startDrawing, { passive: false });
     canvas.addEventListener('touchmove', draw, { passive: false });
     canvas.addEventListener('touchend', stopDrawing);
 
-    // 防止触摸滚动
+    // Prevent touch scrolling
     const preventDefault = (e: TouchEvent) => e.preventDefault();
     canvas.addEventListener('touchstart', preventDefault, { passive: false });
     canvas.addEventListener('touchmove', preventDefault, { passive: false });
@@ -273,7 +273,7 @@ export function UltimateCanvasDrawing({
     };
   }, [startDrawing, draw, stopDrawing]);
 
-  // 工具方法
+  // Utility methods
   const clearPath = useCallback(() => {
     setPathData([]);
     onPathChange([]);
@@ -281,7 +281,7 @@ export function UltimateCanvasDrawing({
 
   const undoLastPoint = useCallback(() => {
     if (pathData.length > 0) {
-      const newPathData = pathData.slice(0, -10); // 删除最后10个点
+      const newPathData = pathData.slice(0, -10); // Remove last 10 points
       setPathData(newPathData);
       onPathChange(newPathData);
     }
@@ -304,14 +304,14 @@ export function UltimateCanvasDrawing({
           <div className="flex items-center gap-2">
             {pathData.length > 0 && (
               <Badge variant="secondary" className="bg-green-100 text-green-800">
-                {pathData.length} 个点
+                {pathData.length} points
               </Badge>
             )}
             
             {showPreview && pathData.length > 5 && (
               <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                 <Eye className="w-3 h-3 mr-1" />
-                预览模式
+                Preview Mode
               </Badge>
             )}
           </div>
@@ -319,9 +319,9 @@ export function UltimateCanvasDrawing({
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* 画布区域 */}
+        {/* Canvas Area */}
         <div className="relative border-2 border-dashed border-gray-300 rounded-lg overflow-hidden bg-gradient-to-br from-gray-50 to-white">
-          {/* 背景图片 */}
+          {/* Background Image */}
           <img
             ref={imageRef}
             src={imageUrl}
@@ -330,7 +330,7 @@ export function UltimateCanvasDrawing({
             draggable={false}
           />
           
-          {/* 绘图画布 */}
+          {/* Drawing Canvas */}
           <canvas
             ref={canvasRef}
             className={`absolute inset-0 w-full h-full ${
@@ -343,35 +343,35 @@ export function UltimateCanvasDrawing({
             }}
           />
           
-          {/* 空状态提示 */}
+          {/* Empty State Instructions */}
           {pathData.length === 0 && !isGenerating && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm">
               <div className="text-center text-white">
                 <MousePointer2 className="w-8 h-8 mx-auto mb-2 opacity-70" />
-                <p className="font-medium">开始绘制相机运动路径</p>
-                <p className="text-sm opacity-70">点击并拖拽指定运镜方向</p>
+                <p className="font-medium">Start Drawing Camera Path</p>
+                <p className="text-sm opacity-70">Click and drag to set movement direction</p>
               </div>
             </div>
           )}
           
-          {/* 生成中遮罩 */}
+          {/* Generating Overlay */}
           {isGenerating && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm">
               <div className="text-center text-white">
                 <div className="animate-spin w-8 h-8 mx-auto mb-2 border-2 border-white/30 border-t-white rounded-full"></div>
-                <p className="font-medium">正在生成视频...</p>
+                <p className="font-medium">Generating Video...</p>
               </div>
             </div>
           )}
         </div>
 
-        {/* 绘图工具栏 */}
+        {/* Drawing Toolbar */}
         <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
           <div className="flex items-center gap-4">
-            {/* 画笔大小 */}
+            {/* Brush Size */}
             <div className="flex items-center gap-2 min-w-32">
               <Palette className="w-4 h-4 text-gray-600" />
-              <span className="text-sm text-gray-600">笔刷</span>
+              <span className="text-sm text-gray-600">Brush Size</span>
               <Slider
                 value={brushSize}
                 onValueChange={setBrushSize}
@@ -384,10 +384,10 @@ export function UltimateCanvasDrawing({
               <span className="text-xs text-gray-500 min-w-6">{brushSize[0]}</span>
             </div>
 
-            {/* 透明度 */}
+            {/* Opacity */}
             <div className="flex items-center gap-2 min-w-32">
               <Eye className="w-4 h-4 text-gray-600" />
-              <span className="text-sm text-gray-600">透明度</span>
+              <span className="text-sm text-gray-600">Opacity</span>
               <Slider
                 value={pathOpacity}
                 onValueChange={setPathOpacity}
@@ -410,7 +410,7 @@ export function UltimateCanvasDrawing({
               className={showPreview ? "bg-blue-50 border-blue-300" : ""}
             >
               <Eye className="w-4 h-4 mr-1" />
-              预览
+              Preview
             </Button>
 
             <Button
@@ -420,7 +420,7 @@ export function UltimateCanvasDrawing({
               disabled={pathData.length === 0 || isGenerating}
             >
               <Undo className="w-4 h-4 mr-1" />
-              撤销
+              Undo
             </Button>
 
             <Button
@@ -430,17 +430,17 @@ export function UltimateCanvasDrawing({
               disabled={pathData.length === 0 || isGenerating}
             >
               <RotateCcw className="w-4 h-4 mr-1" />
-              清除
+              Clear
             </Button>
           </div>
         </div>
 
-        {/* 路径统计信息 */}
+        {/* Path Statistics */}
         {pathData.length > 0 && (
           <div className="grid grid-cols-3 gap-4 p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
             <div className="text-center">
               <p className="text-2xl font-bold text-purple-600">{pathData.length}</p>
-              <p className="text-xs text-gray-600">路径点数</p>
+              <p className="text-xs text-gray-600">Path Points</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-blue-600">
@@ -449,13 +449,13 @@ export function UltimateCanvasDrawing({
                   Math.pow(pathData[pathData.length - 1]?.y - pathData[0]?.y, 2)
                 ))}
               </p>
-              <p className="text-xs text-gray-600">运动距离</p>
+              <p className="text-xs text-gray-600">Distance</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600">
                 {pathData.length > 1 ? Math.round((pathData[pathData.length - 1].timestamp! - pathData[0].timestamp!) / 1000 * 10) / 10 : 0}s
               </p>
-              <p className="text-xs text-gray-600">绘制时长</p>
+              <p className="text-xs text-gray-600">Duration</p>
             </div>
           </div>
         )}

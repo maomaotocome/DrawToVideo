@@ -146,7 +146,7 @@ export default function UltimateCreatePage() {
     }
   };
 
-  // 拖拽上传
+  // Drag and drop upload
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
@@ -159,25 +159,25 @@ export default function UltimateCreatePage() {
     }
   };
 
-  // 选择示例图片
+  // Select sample image
   const selectSampleImage = (imageUrl: string) => {
     setUploadedImageUrl(imageUrl);
     setCurrentStep("drawing");
     toast({
-      title: "示例图片已选择",
-      description: "开始绘制运镜路径",
+      title: "Sample image selected",
+      description: "Start drawing camera movement path",
     });
   };
 
-  // 路径绘制完成
+  // Handle path drawing completion
   const handlePathComplete = (newPathData: PathPoint[]) => {
     setPathData(newPathData);
-    if (newPathData.length > 5) {
+    if (newPathData.length > 3) {
       setCurrentStep("effect");
     }
   };
 
-  // 开始视频生成
+  // Start video generation
   const handleGenerateVideo = async () => {
     if (!uploadedImageUrl || pathData.length === 0) return;
 
@@ -202,7 +202,7 @@ export default function UltimateCreatePage() {
     }
   };
 
-  // 重新开始
+  // Restart workflow
   const handleRestart = () => {
     setCurrentStep("upload");
     setUploadedImageUrl("");
@@ -342,20 +342,25 @@ export default function UltimateCreatePage() {
             <div className="space-y-6">
               <UltimateCanvasDrawing
                 imageUrl={uploadedImageUrl}
-                onPathChange={handlePathComplete}
+                pathData={pathData}
                 selectedEffect={selectedEffect}
+                onPathChange={setPathData}
                 isGenerating={isGenerating}
               />
               
-              {pathData.length > 5 && (
-                <div className="text-center">
+              {pathData.length > 0 && (
+                <div className="text-center space-y-3">
+                  <div className="text-sm text-gray-600">
+                    Path drawn with {pathData.length} points • Ready for camera effect
+                  </div>
                   <AnimatedButton 
                     onClick={() => setCurrentStep("effect")} 
                     size="lg"
                     className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                     scaleOnHover={true}
                   >
-                    Choose Camera Effect <Sparkles className="w-4 h-4 ml-2" />
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Choose Camera Effect
                   </AnimatedButton>
                 </div>
               )}
