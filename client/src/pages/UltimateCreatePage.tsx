@@ -211,22 +211,22 @@ export default function UltimateCreatePage() {
             
             <Sparkles className="w-8 h-8 text-purple-600" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              🎬 Ultimate Draw to Video
+              Draw to Video Studio
             </h1>
           </div>
           
           <p className="text-muted-foreground mb-6">
-            超越Higgsfield的专业视频生成平台 - 零提示词，纯视觉操作
+            Transform your drawings into viral videos with AI-powered cinema effects
           </p>
 
           {/* 步骤进度条 */}
           <div className="flex items-center justify-center gap-4 max-w-md mx-auto">
             {[
-              { step: 'upload', label: '上传图片', icon: Upload },
-              { step: 'drawing', label: '绘制路径', icon: Video },
-              { step: 'effect', label: '选择效果', icon: Sparkles },
-              { step: 'processing', label: '生成视频', icon: Timer },
-              { step: 'completed', label: '完成', icon: CheckCircle }
+              { step: 'upload', label: 'Upload', icon: Upload },
+              { step: 'drawing', label: 'Draw Path', icon: Video },
+              { step: 'effect', label: 'Choose Effect', icon: Sparkles },
+              { step: 'processing', label: 'Generate', icon: Timer },
+              { step: 'completed', label: 'Complete', icon: CheckCircle }
             ].map(({ step, label, icon: Icon }, index) => (
               <div key={step} className="flex items-center">
                 <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
@@ -244,7 +244,19 @@ export default function UltimateCreatePage() {
         </div>
 
         {/* 主要内容区域 */}
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-6">
+          
+          {/* 左侧：用户指导面板 */}
+          <div className="lg:col-span-1">
+            <UserGuidancePanel 
+              currentStep={currentStep}
+              selectedEffect={selectedEffect}
+              pathLength={pathData.length}
+            />
+          </div>
+          
+          {/* 右侧：主要工作区域 */}
+          <div className="lg:col-span-2 space-y-6">
           
           {/* 步骤1: 上传图片 */}
           {currentStep === "upload" && (
@@ -252,7 +264,7 @@ export default function UltimateCreatePage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Upload className="w-5 h-5 text-purple-600" />
-                  上传图片或选择示例
+                  Upload Image or Choose Sample
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -267,10 +279,10 @@ export default function UltimateCreatePage() {
                   onDrop={handleDrop}
                 >
                   <Upload className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                  <p className="text-lg font-medium mb-2">拖拽图片到这里</p>
-                  <p className="text-gray-500 mb-4">支持 JPG, PNG, GIF 格式，最大 10MB</p>
+                  <p className="text-lg font-medium mb-2">Drop Your Image Here</p>
+                  <p className="text-gray-500 mb-4">Supports JPG, PNG, GIF formats, max 10MB</p>
                   <Button onClick={() => fileInputRef.current?.click()}>
-                    选择文件
+                    Choose File
                   </Button>
                   <input
                     ref={fileInputRef}
@@ -284,9 +296,9 @@ export default function UltimateCreatePage() {
                   />
                 </div>
 
-                {/* 示例图片 */}
+                {/* Sample Images */}
                 <div>
-                  <h3 className="font-medium mb-3">或选择示例图片</h3>
+                  <h3 className="font-medium mb-3">Or Choose Sample Image</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     {SAMPLE_IMAGES.map((imageUrl, index) => (
                       <div
@@ -320,7 +332,7 @@ export default function UltimateCreatePage() {
               {pathData.length > 5 && (
                 <div className="text-center">
                   <Button onClick={() => setCurrentStep("effect")} size="lg">
-                    选择相机效果 <Sparkles className="w-4 h-4 ml-2" />
+                    Choose Camera Effect <Sparkles className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
               )}
@@ -342,7 +354,7 @@ export default function UltimateCreatePage() {
                   onClick={() => setCurrentStep("drawing")}
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  修改路径
+                  Edit Path
                 </Button>
                 
                 <Button 
@@ -351,7 +363,7 @@ export default function UltimateCreatePage() {
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                 >
                   <Play className="w-4 h-4 mr-2" />
-                  生成视频
+                  Generate Video
                 </Button>
               </div>
             </div>
@@ -363,7 +375,7 @@ export default function UltimateCreatePage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Timer className="w-5 h-5 text-purple-600 animate-spin" />
-                  正在生成电影级视频
+                  Generating Cinema-Quality Video
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -469,6 +481,8 @@ export default function UltimateCreatePage() {
               </CardContent>
             </Card>
           )}
+          
+          </div>
         </div>
       </div>
     </div>

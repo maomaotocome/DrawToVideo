@@ -27,13 +27,13 @@ export function UserGuidancePanel({ currentStep, selectedEffect, pathLength = 0 
     switch (currentStep) {
       case "upload":
         return {
-          title: "第一步：上传图片",
-          description: "请选择一张清晰的图片作为视频素材",
+          title: "Step 1: Upload Image",
+          description: "Select a high-quality image for your video creation",
           instructions: [
-            "支持 JPG、PNG 格式",
-            "建议图片尺寸 1920x1080 或更高",
-            "文件大小不超过 10MB",
-            "图片内容越清晰，生成效果越好"
+            "Supports JPG, PNG formats",
+            "Recommended resolution: 1920x1080 or higher",
+            "File size limit: 10MB max",
+            "Higher quality images produce better results"
           ],
           icon: <Upload className="w-6 h-6 text-green-500" />,
           color: "border-green-200 bg-green-50"
@@ -41,13 +41,13 @@ export function UserGuidancePanel({ currentStep, selectedEffect, pathLength = 0 
       
       case "drawing":
         return {
-          title: "第二步：绘制相机路径",
-          description: "用鼠标在图片上绘制相机运动轨迹",
+          title: "Step 2: Draw Camera Path",
+          description: "Draw the camera movement path directly on your image",
           instructions: [
-            "按住鼠标左键并拖拽绘制路径",
-            "路径长度决定运动幅度",
-            "绘制方向决定相机移动方向",
-            `已绘制 ${pathLength} 个点，建议绘制 20-50 个点`
+            "Click and drag to draw the movement path",
+            "Path length determines motion amplitude",
+            "Drawing direction sets camera movement",
+            `${pathLength} points drawn (recommended: 20-50 points)`
           ],
           icon: <MousePointer2 className="w-6 h-6 text-purple-500" />,
           color: "border-purple-200 bg-purple-50"
@@ -55,13 +55,13 @@ export function UserGuidancePanel({ currentStep, selectedEffect, pathLength = 0 
       
       case "effect":
         return {
-          title: "第三步：选择相机效果",
-          description: "选择专业的相机运动效果",
+          title: "Step 3: Choose Camera Effect",
+          description: "Select professional cinematic camera effects",
           instructions: [
-            `当前效果：${getEffectName(selectedEffect || 'zoom_in')}`,
-            "推进特写 - 适合突出主体",
-            "环绕拍摄 - 适合展示全貌",
-            "螺旋戏剧 - 适合动感场景"
+            `Current effect: ${getEffectName(selectedEffect || 'zoom_in')}`,
+            "Zoom In - Perfect for subject focus",
+            "Orbit - Great for full scene reveal",
+            "Dramatic Spiral - Ideal for dynamic scenes"
           ],
           icon: <Wand2 className="w-6 h-6 text-blue-500" />,
           color: "border-blue-200 bg-blue-50"
@@ -147,14 +147,14 @@ export function UserGuidancePanel({ currentStep, selectedEffect, pathLength = 0 
 
 function getEffectName(effect: string): string {
   const effectNames: Record<string, string> = {
-    'zoom_in': '推进特写',
-    'orbit': '环绕拍摄',
-    'pull_back': '拉远全景',
-    'dramatic_spiral': '螺旋戏剧',
-    'vertigo_effect': '眩晕效果',
-    'bullet_time': '子弹时间',
-    'crash_zoom': '冲击推进',
-    'floating_follow': '悬浮跟随'
+    'zoom_in': 'Zoom In',
+    'orbit': 'Orbit Shot',
+    'pull_back': 'Pull Back',
+    'dramatic_spiral': 'Dramatic Spiral',
+    'vertigo_effect': 'Vertigo Effect',
+    'bullet_time': 'Bullet Time',
+    'crash_zoom': 'Crash Zoom',
+    'floating_follow': 'Floating Follow'
   };
   return effectNames[effect] || effect;
 }

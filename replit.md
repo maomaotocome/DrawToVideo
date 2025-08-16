@@ -11,6 +11,9 @@ Built with professional SaaS design standards, the platform offers a premium use
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Interface Language: English (primary for SEO and Google rankings, targeting "draw to video" keywords)
+Target Market: English-speaking users for viral video creation
+SEO Focus: Optimize for Google front-page rankings on "draw to video" searches
 
 ## System Architecture
 
