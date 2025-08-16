@@ -4,8 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { UltimateEffectSelector } from "@/components/UltimateEffectSelector";
 import { 
   ArrowLeft, 
+  ArrowUp,
   Upload, 
   Sparkles, 
   Video, 
@@ -24,8 +26,16 @@ import {
   CheckCircle
 } from "lucide-react";
 
-// MVP运镜效果类型（根据MVP需求文档）
-type CameraEffect = "zoom_in" | "orbit" | "pull_back";
+// 🎬 终极相机效果类型 - 扩展超越Higgsfield
+type UltimateCameraEffect = 
+  | "zoom_in" 
+  | "orbit" 
+  | "pull_back" 
+  | "dramatic_spiral" 
+  | "vertigo_effect" 
+  | "bullet_time" 
+  | "crash_zoom" 
+  | "floating_follow";
 
 type WorkflowStep = "upload" | "drawing" | "effect" | "processing" | "completed";
 
@@ -40,9 +50,85 @@ interface DrawingPath {
   id: string;
 }
 
+// 🎬 终极相机效果配置
+const ULTIMATE_CAMERA_EFFECTS = [
+  {
+    id: "zoom_in" as UltimateCameraEffect,
+    name: "Zoom In",
+    description: "Camera pushes forward along path - perfect for product reveals",
+    icon: <Target className="w-6 h-6" />,
+    preview: "Cinema-grade push movement",
+    gradient: "from-blue-500 to-cyan-500",
+    difficulty: "Beginner",
+    estimatedTime: "5-10s"
+  },
+  {
+    id: "orbit" as UltimateCameraEffect,
+    name: "Orbit",
+    description: "Smooth 360° rotation around subject",
+    icon: <RotateCcw className="w-6 h-6" />,
+    preview: "Professional circular movement", 
+    gradient: "from-green-500 to-emerald-500",
+    difficulty: "Beginner",
+    estimatedTime: "8-15s"
+  },
+  {
+    id: "pull_back" as UltimateCameraEffect,
+    name: "Pull Back",
+    description: "Dramatic reveal of the bigger picture",
+    icon: <ArrowUp className="w-6 h-6" />,
+    preview: "Cinematic reveal shot",
+    gradient: "from-purple-500 to-violet-500",
+    difficulty: "Intermediate", 
+    estimatedTime: "10-20s"
+  },
+  {
+    id: "dramatic_spiral" as UltimateCameraEffect,
+    name: "Dramatic Spiral",
+    description: "Viral spiral zoom with speed effects",
+    icon: <Sparkles className="w-6 h-6" />,
+    preview: "TikTok viral effect",
+    gradient: "from-pink-500 to-rose-500",
+    difficulty: "Advanced",
+    estimatedTime: "15-25s",
+    isNew: true
+  },
+  {
+    id: "vertigo_effect" as UltimateCameraEffect,
+    name: "Vertigo Effect",
+    description: "Hitchcock zoom - push in while zoom out",
+    icon: <Eye className="w-6 h-6" />,
+    preview: "Mind-bending classic",
+    gradient: "from-red-500 to-orange-500",
+    difficulty: "Master",
+    estimatedTime: "20-35s",
+    isPremium: true
+  },
+  {
+    id: "crash_zoom" as UltimateCameraEffect,
+    name: "Crash Zoom",
+    description: "Rapid aggressive zoom for impact moments",
+    icon: <Zap className="w-6 h-6" />,
+    preview: "Action movie style",
+    gradient: "from-yellow-500 to-amber-500",
+    difficulty: "Intermediate",
+    estimatedTime: "8-15s"
+  },
+  {
+    id: "floating_follow" as UltimateCameraEffect,
+    name: "Floating Follow",
+    description: "Dreamy organic camera movement",
+    icon: <RefreshCw className="w-6 h-6" />,
+    preview: "Ethereal movement",
+    gradient: "from-teal-500 to-cyan-500",
+    difficulty: "Advanced",
+    estimatedTime: "12-20s"
+  }
+];
+
 const CAMERA_EFFECTS = [
   {
-    id: "zoom_in" as CameraEffect,
+    id: "zoom_in",
     name: "Zoom In",
     description: "Camera moves forward along the path - perfect for product reveals",
     icon: <Target className="w-6 h-6" />,
@@ -50,15 +136,15 @@ const CAMERA_EFFECTS = [
     gradient: "from-blue-500 to-cyan-500"
   },
   {
-    id: "orbit" as CameraEffect,
+    id: "orbit",
     name: "Orbit",
     description: "Camera circles around the subject - great for 360° showcases",
-    icon: <RefreshCw className="w-6 h-6" />,
+    icon: <RotateCcw className="w-6 h-6" />,
     preview: "Circular movement",
     gradient: "from-purple-500 to-pink-500"
   },
   {
-    id: "pull_back" as CameraEffect,
+    id: "pull_back",
     name: "Pull Back",
     description: "Camera pulls away to reveal the bigger picture",
     icon: <Eye className="w-6 h-6" />,
@@ -71,7 +157,7 @@ export default function MVPCreatePage() {
   const [currentStep, setCurrentStep] = useState<WorkflowStep>("upload");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [drawnPaths, setDrawnPaths] = useState<DrawingPath[]>([]);
-  const [selectedEffect, setSelectedEffect] = useState<CameraEffect | null>(null);
+  const [selectedEffect, setSelectedEffect] = useState<string>("zoom_in");
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [dragActive, setDragActive] = useState(false);
@@ -580,7 +666,7 @@ export default function MVPCreatePage() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-8 mb-8">
-        {CAMERA_EFFECTS.map((effect) => (
+        {CAMERA_EFFECTS.map((effect: any) => (
           <Card 
             key={effect.id}
             className={`cursor-pointer transition-all duration-300 ${

@@ -4,7 +4,8 @@ import { storage } from "./storage";
 import { ObjectStorageService } from "./objectStorage";
 import { insertProjectSchema } from "@shared/schema";
 import { z } from "zod";
-import { HiggsfieldVideoService, createDemoVideo } from "./videoGeneration";
+import { ultimateVideoGeneration } from "./services/videoGeneration";
+import { ultimateVideoRouter } from "./api/ultimate-video";
 
 // Helper function to convert annotations to descriptive prompt
 function generatePromptFromAnnotations(annotations: any[]): string {
@@ -58,7 +59,6 @@ function getArrowDirection(arrow: any): string {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const objectStorageService = new ObjectStorageService();
-  const videoService = new HiggsfieldVideoService();
 
   // Get upload URL for project images
   app.post("/api/images/upload", async (req, res) => {
@@ -163,43 +163,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           console.log(`Generating video for project ${project.id} with prompt: "${prompt}"`);
 
-          // Try real API first, fallback to demo if no API key
-          const result = await videoService.generateVideo({
+          // 使用终极视频生成服务
+          const result = await ultimateVideoGeneration.generateVideo({
             imageUrl,
-            prompt,
+            pathData: [], // TODO: 从annotations转换路径数据
+            effect: 'zoom_in', // 默认效果
             duration: 8,
-            resolution: '720p',
-            aspectRatio: '16:9',
-            style: 'realistic'
+            quality: 'hd'
           });
 
-          if (result.success && result.generationId) {
-            // Store generation ID for status checking
+          if (result) {
+            // 直接更新项目状态为完成
             await storage.updateProject(req.params.id, {
-              generationId: result.generationId,
-              status: "processing"
-            });
-
-            // Wait for completion
-            const finalResult = await videoService.waitForCompletion(result.generationId);
-            
-            if (finalResult.success && finalResult.videoUrl) {
-              await storage.updateProject(req.params.id, {
-                videoUrl: finalResult.videoUrl,
-                status: "completed"
-              });
-              console.log(`Video generation completed for project ${project.id}: ${finalResult.videoUrl}`);
-            } else {
-              throw new Error(finalResult.error || 'Video generation failed');
-            }
-          } else {
-            // Fallback to demo video if API is not available
-            console.log(`Using demo video for project ${project.id} - API not available`);
-            const demoResult = createDemoVideo();
-            await storage.updateProject(req.params.id, {
-              videoUrl: demoResult.videoUrl,
+              videoUrl: result,
               status: "completed"
             });
+            console.log(`Ultimate video generation completed for project ${project.id}: ${result}`);
+          } else {
+            throw new Error('Video generation failed');
           }
         } catch (error) {
           console.error("Error in video generation:", error);
@@ -238,6 +219,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to get project status" });
     }
   });
+
+  // 注册终极视频API路由
+  app.use("/api/ultimate-video", ultimateVideoRouter);
 
   const httpServer = createServer(app);
   return httpServer;
