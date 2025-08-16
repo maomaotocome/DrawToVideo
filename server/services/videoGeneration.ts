@@ -134,7 +134,7 @@ export interface PathPoint {
 export interface VideoGenerationOptions {
   imageUrl: string;
   pathData: PathPoint[];
-  effect: keyof typeof CINEMATIC_PRESETS;
+  effect: string;
   duration?: number;
   quality?: 'preview' | 'hd' | '4k' | 'cinema';
   socialPlatform?: 'tiktok' | 'instagram' | 'youtube' | 'general';
@@ -170,18 +170,27 @@ export class UltimateVideoGenerationService {
     try {
       console.log(`🎬 Starting ${options.effect} generation with ${this.generationMode} mode`);
       
-      // 模拟视频生成过程
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // 导入真实视频生成服务
+      const { realVideoGeneration } = await import('./realVideoGeneration');
+      
+      // 调用真实视频生成
+      const videoUrl = await realVideoGeneration.generateVideo(options);
       
       const generationTime = performance.now() - startTime;
       this.updateMetrics(generationTime, true);
       
-      console.log(`✅ Video generated in ${(generationTime / 1000).toFixed(2)}s`);
-      return 'https://example.com/generated-video.mp4';
+      console.log(`✅ Real video generated in ${(generationTime / 1000).toFixed(2)}s`);
+      return videoUrl;
       
     } catch (error) {
       this.updateMetrics(0, false);
       console.error('❌ Video generation failed:', error);
+      
+      // 如果真实生成失败，提供有意义的错误信息
+      if (error instanceof Error && error.message.includes('API')) {
+        throw new Error('Video generation service unavailable. Please check API configuration.');
+      }
+      
       throw new Error(`Failed to generate video: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }

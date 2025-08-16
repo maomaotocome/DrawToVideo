@@ -224,6 +224,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { default: ultimateVideoRouter } = await import('./api/ultimate-video');
   app.use("/api/ultimate-video", ultimateVideoRouter);
 
+  // 注册文件上传路由
+  const { default: uploadRouter } = await import('./middleware/uploadHandler');
+  app.use("/api/images", uploadRouter);
+
   const httpServer = createServer(app);
   return httpServer;
 }
