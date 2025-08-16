@@ -4,14 +4,14 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import WorldClassLanding from "@/pages/WorldClassLanding";
-import CreatePage from "@/pages/CreatePage";
+import MVPCreatePage from "@/pages/MVPCreatePage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={WorldClassLanding} />
-      <Route path="/create" component={CreatePage} />
+      <Route path="/create" component={MVPCreatePage} />
       <Route component={NotFound} />
     </Switch>
   );

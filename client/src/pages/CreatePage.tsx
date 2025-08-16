@@ -71,8 +71,8 @@ export default function CreatePage() {
         setUploadedImage(e.target?.result as string);
         setCurrentStep("drawing");
         toast({
-          title: "图片上传成功",
-          description: "现在可以开始绘制运动指令了"
+          title: "Image uploaded successfully",
+          description: "Now you can start drawing motion paths"
         });
       };
       reader.readAsDataURL(file);
@@ -100,8 +100,8 @@ export default function CreatePage() {
             setVideoUrl("/api/placeholder/video/sample.mp4");
             setCurrentStep("completed");
             toast({
-              title: "🎉 视频生成完成！",
-              description: "您的AI动画视频已准备就绪"
+              title: "Video generated successfully!",
+              description: "Your AI animated video is ready"
             });
           }, 1000);
           return 100;
