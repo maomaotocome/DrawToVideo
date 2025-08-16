@@ -69,10 +69,14 @@ export function FixedCanvasDrawing({
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
 
+    console.log('Loading image:', imageUrl);
+    setImageLoaded(false);
+
     const img = new Image();
     img.crossOrigin = 'anonymous';
     
     img.onload = () => {
+      console.log('Image loaded successfully:', img.naturalWidth, 'x', img.naturalHeight);
       // 清除画布
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
@@ -98,9 +102,27 @@ export function FixedCanvasDrawing({
       // 绘制图片
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
       setImageLoaded(true);
+      console.log('Image drawn to canvas');
       
       // 重新绘制路径（如果有）
       drawPath(ctx);
+    };
+
+    img.onerror = (error) => {
+      console.error('Image loading failed:', error);
+      console.error('Failed URL:', imageUrl);
+      setImageLoaded(false);
+      
+      // 显示错误状态并尝试重新加载
+      setTimeout(() => {
+        console.log('Retrying image load...');
+        img.src = imageUrl;
+      }, 2000);
+    };
+
+    img.onabort = () => {
+      console.error('Image loading aborted');
+      setImageLoaded(false);
     };
     
     img.src = imageUrl;
@@ -361,11 +383,29 @@ export function FixedCanvasDrawing({
           onTouchEnd={stopDrawing}
         />
         
-        {!imageLoaded && (
+        {!imageLoaded && imageUrl && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
+            <div className="text-center space-y-3">
+              <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full mx-auto"></div>
+              <p className="text-sm text-gray-600">Loading image...</p>
+              <div className="text-xs text-gray-400 max-w-xs break-all">
+                {imageUrl.substring(0, 60)}...
+              </div>
+              <button 
+                onClick={() => window.location.reload()}
+                className="text-xs text-purple-600 hover:text-purple-800 underline"
+              >
+                Reload if stuck
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {!imageUrl && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
             <div className="text-center">
-              <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-              <p className="text-sm text-gray-600">Loading image...</p>
+              <p className="text-gray-600">No image uploaded</p>
+              <p className="text-xs text-gray-400">Please upload an image first</p>
             </div>
           </div>
         )}

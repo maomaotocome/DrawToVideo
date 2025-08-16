@@ -2,10 +2,13 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { ObjectStorageService } from "./objectStorage";
+import { upload, getPublicImageUrl } from "./middleware/simpleUpload";
 import { insertProjectSchema } from "@shared/schema";
 import { z } from "zod";
 import { ultimateVideoGeneration } from "./services/videoGeneration";
 import { directUploadHandler, handleDirectUpload } from "./routes/direct-upload";
+import express from "express";
+import path from "path";
 
 
 // Helper function to convert annotations to descriptive prompt
@@ -60,6 +63,30 @@ function getArrowDirection(arrow: any): string {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const objectStorageService = new ObjectStorageService();
+  
+  // Simple image upload endpoint (bypassing Object Storage issues)
+  app.post("/api/images/simple-upload", upload.single('file'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, error: 'No file uploaded' });
+      }
+      
+      const publicUrl = getPublicImageUrl(req.file.filename);
+      console.log('Simple upload - File:', req.file.filename, 'URL:', publicUrl);
+      
+      res.json({ 
+        success: true, 
+        publicUrl: publicUrl,
+        fileName: req.file.filename
+      });
+    } catch (error) {
+      console.error('Simple upload error:', error);
+      res.status(500).json({ success: false, error: 'Upload failed' });
+    }
+  });
+
+  // Serve uploaded images statically
+  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
   // 直接上传端点 - 避免URL参数过长问题
   app.post("/api/images/direct-upload", directUploadHandler, handleDirectUpload);
