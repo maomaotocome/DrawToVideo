@@ -14,8 +14,10 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { UltimateEffectSelector } from "@/components/UltimateEffectSelector";
 import { UltimateCanvasDrawing } from "@/components/UltimateCanvasDrawing";
+import { SubscriptionModal } from "@/components/SubscriptionModal";
 import { UserGuidancePanel } from "@/components/UserGuidancePanel";
 import { useUltimateVideo } from "@/hooks/useUltimateVideo";
+import { useSubscription } from "@/hooks/useSubscription";
 import { getUploadedImageFromSession, clearUploadedImageSession } from "@/components/ImageUploadHandler";
 import { 
   ArrowLeft, 
@@ -87,6 +89,18 @@ export default function UltimateCreatePage() {
     generateVideo,
     resetGeneration
   } = useUltimateVideo();
+
+  const {
+    subscription,
+    handleGenerationAttempt,
+    trackGeneration,
+    showUpgradeModal,
+    setShowUpgradeModal,
+    upgradeTrigger,
+    upgradeSubscription,
+    getRemainingCredits,
+    getRemainingGenerations
+  } = useSubscription();
 
   // Check for uploaded image from landing page
   useEffect(() => {
@@ -182,11 +196,17 @@ export default function UltimateCreatePage() {
     }
   };
 
-  // Start video generation
+  // Start video generation with subscription check
   const handleGenerateVideo = async () => {
     if (!uploadedImageUrl || pathData.length === 0) return;
 
+    // Check subscription limits
+    if (!handleGenerationAttempt()) {
+      return; // Will show upgrade modal automatically
+    }
+
     setCurrentStep("processing");
+    trackGeneration(); // Track usage
     
     try {
       await generateVideo({
@@ -194,7 +214,7 @@ export default function UltimateCreatePage() {
         pathData,
         effect: selectedEffect,
         duration: 5,
-        quality: 'hd',
+        quality: subscription.plan === 'free' ? 'sd' : 'hd',
         socialPlatform: 'general',
         aspectRatio: '16:9',
         style: 'cinematic'
@@ -231,6 +251,27 @@ export default function UltimateCreatePage() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
+            
+            {/* Subscription Status */}
+            <div className="absolute right-4 top-4 flex items-center gap-2">
+              <div className="text-right text-sm">
+                <div className="text-gray-600">
+                  Credits: {getRemainingCredits()}/{subscription.creditsTotal}
+                </div>
+                <div className="text-gray-500 text-xs">
+                  {subscription.plan.toUpperCase()} Plan
+                </div>
+              </div>
+              {subscription.plan === 'free' && (
+                <Button
+                  size="sm"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  onClick={() => setShowUpgradeModal(true)}
+                >
+                  Upgrade
+                </Button>
+              )}
+            </div>
             
             <Sparkles className="w-8 h-8 text-purple-600" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -359,16 +400,23 @@ export default function UltimateCreatePage() {
                     : 'Draw a path on the image to continue'
                   }
                 </div>
-                <AnimatedButton 
-                  onClick={() => setCurrentStep("effect")} 
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                  scaleOnHover={true}
-                  disabled={pathData.length === 0}
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Choose Camera Effect
-                </AnimatedButton>
+                <div className="flex items-center justify-center gap-3">
+                  {subscription.plan === 'free' && pathData.length > 0 && (
+                    <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      {getRemainingGenerations()} generations remaining today
+                    </div>
+                  )}
+                  <AnimatedButton 
+                    onClick={() => setCurrentStep("effect")} 
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    scaleOnHover={true}
+                    disabled={pathData.length === 0}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Choose Camera Effect
+                  </AnimatedButton>
+                </div>
               </div>
             </div>
           )}
@@ -382,26 +430,44 @@ export default function UltimateCreatePage() {
                 userPlan="free"
               />
               
-              <div className="text-center space-x-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setCurrentStep("drawing")}
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Edit Path
-                </Button>
+              <div className="space-y-4">
+                {subscription.plan === 'free' && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+                    <p className="text-sm text-yellow-800 mb-2">
+                      Free plan: {getRemainingGenerations()} generations remaining • SD quality
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-yellow-400 text-yellow-700 hover:bg-yellow-100"
+                      onClick={() => setShowUpgradeModal(true)}
+                    >
+                      Upgrade for HD & Unlimited
+                    </Button>
+                  </div>
+                )}
                 
-                <AnimatedButton 
-                  onClick={handleGenerateVideo}
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                  isLoading={isGenerating}
-                  loadingText="Generating..."
-                  scaleOnHover={true}
-                >
-                  <Play className="w-4 h-4 mr-2" />
-                  Generate Video
-                </AnimatedButton>
+                <div className="text-center space-x-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setCurrentStep("drawing")}
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Edit Path
+                  </Button>
+                  
+                  <AnimatedButton 
+                    onClick={handleGenerateVideo}
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    isLoading={isGenerating}
+                    loadingText="Generating..."
+                    scaleOnHover={true}
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Generate Video
+                  </AnimatedButton>
+                </div>
               </div>
             </div>
           )}
@@ -433,6 +499,8 @@ export default function UltimateCreatePage() {
                   <div className="text-sm space-y-1">
                     <p>Effect: <Badge variant="outline">{getCameraEffectName(selectedEffect)}</Badge></p>
                     <p>Path Points: {pathData.length}</p>
+                    <p>Quality: {subscription.plan === 'free' ? 'SD (480p)' : 'HD (1080p)'}</p>
+                    <p>Credits Used: 1/{subscription.creditsTotal}</p>
                     <p>Estimated Time: 5-15 seconds</p>
                   </div>
                 </div>
@@ -526,6 +594,14 @@ export default function UltimateCreatePage() {
           </div>
         </div>
       </div>
+      
+      {/* Subscription Modal */}
+      <SubscriptionModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        trigger={upgradeTrigger}
+        onUpgrade={upgradeSubscription}
+      />
     </div>
   );
 }
