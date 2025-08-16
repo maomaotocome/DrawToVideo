@@ -4,10 +4,13 @@
  */
 
 import { useState, useRef, useEffect } from "react";
+import { AnimatedButton } from "@/components/ui/animated-button";
+import { HoverCardEnhanced } from "@/components/ui/hover-card-enhanced";
+import { FadeIn } from "@/components/ui/fade-in";
+import { ProgressEnhanced } from "@/components/ui/progress-enhanced";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { UltimateEffectSelector } from "@/components/UltimateEffectSelector";
 import { UltimateCanvasDrawing } from "@/components/UltimateCanvasDrawing";
@@ -346,9 +349,14 @@ export default function UltimateCreatePage() {
               
               {pathData.length > 5 && (
                 <div className="text-center">
-                  <Button onClick={() => setCurrentStep("effect")} size="lg">
+                  <AnimatedButton 
+                    onClick={() => setCurrentStep("effect")} 
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    scaleOnHover={true}
+                  >
                     Choose Camera Effect <Sparkles className="w-4 h-4 ml-2" />
-                  </Button>
+                  </AnimatedButton>
                 </div>
               )}
             </div>
@@ -372,21 +380,25 @@ export default function UltimateCreatePage() {
                   Edit Path
                 </Button>
                 
-                <Button 
+                <AnimatedButton 
                   onClick={handleGenerateVideo}
                   size="lg"
                   className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  isLoading={isGenerating}
+                  loadingText="Generating..."
+                  scaleOnHover={true}
                 >
                   <Play className="w-4 h-4 mr-2" />
                   Generate Video
-                </Button>
+                </AnimatedButton>
               </div>
             </div>
           )}
 
           {/* Step 4: Processing */}
           {currentStep === "processing" && (
-            <Card className="w-full max-w-2xl mx-auto">
+            <FadeIn direction="up" delay={0}>
+              <HoverCardEnhanced className="w-full max-w-2xl mx-auto" shadowIntensity="xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Timer className="w-5 h-5 text-purple-600 animate-spin" />
@@ -399,7 +411,7 @@ export default function UltimateCreatePage() {
                     <span className="text-sm font-medium">Progress</span>
                     <span className="text-sm text-muted-foreground">{progress}%</span>
                   </div>
-                  <Progress value={progress} className="w-full" />
+                  <ProgressEnhanced value={progress} className="w-full" animated={true} color="purple" showPercentage={false} />
                   <p className="text-sm text-muted-foreground text-center">
                     {generationStep || 'Preparing to generate...'}
                   </p>
@@ -428,12 +440,14 @@ export default function UltimateCreatePage() {
                   </div>
                 )}
               </CardContent>
-            </Card>
+              </HoverCardEnhanced>
+            </FadeIn>
           )}
 
           {/* Step 5: Complete */}
           {currentStep === "completed" && result && (
-            <Card className="w-full max-w-2xl mx-auto">
+            <FadeIn direction="up" delay={0}>
+              <HoverCardEnhanced className="w-full max-w-2xl mx-auto" shadowIntensity="lg">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600" />
@@ -494,7 +508,8 @@ export default function UltimateCreatePage() {
                   </Button>
                 </div>
               </CardContent>
-            </Card>
+              </HoverCardEnhanced>
+            </FadeIn>
           )}
           
           </div>

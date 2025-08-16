@@ -4,6 +4,7 @@
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FadeIn } from "@/components/ui/fade-in";
 import { Badge } from "@/components/ui/badge";
 import { 
   MousePointer2, 
@@ -109,25 +110,32 @@ export function UserGuidancePanel({ currentStep, selectedEffect, pathLength = 0 
   const stepInfo = getStepInfo();
   
   return (
-    <Card className={`${stepInfo.color} border-2 transition-all duration-300`}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-3">
-          {stepInfo.icon}
-          {stepInfo.title}
-        </CardTitle>
-        <p className="text-sm text-gray-600 mt-1">
-          {stepInfo.description}
-        </p>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          {stepInfo.instructions.map((instruction, index) => (
-            <div key={index} className="flex items-start gap-2">
-              <ArrowRight className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-              <span className="text-sm text-gray-700">{instruction}</span>
+    <FadeIn direction="left" delay={50}>
+      <Card className={`${stepInfo.color} border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg transform-gpu`}>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-3">
+            <div className="p-1 rounded-full bg-white shadow-sm animate-pulse">
+              {stepInfo.icon}
             </div>
-          ))}
-        </div>
+            {stepInfo.title}
+          </CardTitle>
+          <p className="text-sm text-gray-600 mt-1">
+            {stepInfo.description}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {stepInfo.instructions.map((instruction, index) => (
+              <div 
+                key={index} 
+                className="flex items-start gap-2 animate-slide-up"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <ArrowRight className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0 transition-colors hover:text-purple-500" />
+                <span className="text-sm text-gray-700">{instruction}</span>
+              </div>
+            ))}
+          </div>
         
         {currentStep === "drawing" && (
           <div className="mt-4 p-3 bg-white rounded-lg border">
@@ -140,8 +148,9 @@ export function UserGuidancePanel({ currentStep, selectedEffect, pathLength = 0 
             </ul>
           </div>
         )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </FadeIn>
   );
 }
 
