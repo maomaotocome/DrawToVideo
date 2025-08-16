@@ -20,7 +20,7 @@ interface UltimateCanvasDrawingProps {
 
 // Camera effect name mapping
 function getCameraEffectName(effect: string): string {
-  const effectNames = {
+  const effectNames: Record<string, string> = {
     'zoom_in': 'Zoom In',
     'orbit': 'Orbit Shot',
     'pull_back': 'Pull Back',
@@ -48,7 +48,7 @@ export function UltimateCanvasDrawing({
   const [showPreview, setShowPreview] = useState(true);
   const [pathOpacity, setPathOpacity] = useState([0.8]);
 
-  // 初始化画布
+  // Initialize canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -56,21 +56,12 @@ export function UltimateCanvasDrawing({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // 设置高DPI支持
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    
-    ctx.scale(dpr, dpr);
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
-
-    // 设置绘图样式
+    // Set drawing styles
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.imageSmoothingEnabled = true;
+    
+    console.log('Canvas initialized:', canvas.width, 'x', canvas.height);
   }, []);
 
   // 绘制路径
@@ -209,18 +200,22 @@ export function UltimateCanvasDrawing({
   }, []);
 
   const startDrawing = useCallback((e: MouseEvent | TouchEvent) => {
+    e.preventDefault();
     const canvas = canvasRef.current;
     if (!canvas || isGenerating) return;
 
+    console.log('Starting to draw');
     setIsDrawing(true);
     const point = getPointFromEvent(e, canvas);
     const newPathData = [point];
     
     setPathData(newPathData);
     onPathChange(newPathData);
+    console.log('New path started with point:', point);
   }, [getPointFromEvent, onPathChange, isGenerating]);
 
   const draw = useCallback((e: MouseEvent | TouchEvent) => {
+    e.preventDefault();
     if (!isDrawing) return;
     
     const canvas = canvasRef.current;
@@ -336,10 +331,13 @@ export function UltimateCanvasDrawing({
             className={`absolute inset-0 w-full h-full ${
               isGenerating ? 'pointer-events-none opacity-50' : 'cursor-crosshair'
             }`}
+            width={800}
+            height={320}
             style={{ 
               touchAction: 'none',
               width: '100%',
-              height: '100%' 
+              height: '320px',
+              display: 'block'
             }}
           />
           
