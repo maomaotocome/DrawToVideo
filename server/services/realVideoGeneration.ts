@@ -28,8 +28,17 @@ export class RealVideoGenerationService {
   private async ensureTempDir() {
     try {
       await fs.mkdir(this.tempDir, { recursive: true });
+      // 测试写入权限
+      const testFile = path.join(this.tempDir, 'test.txt');
+      await fs.writeFile(testFile, 'test');
+      await fs.unlink(testFile);
+      console.log('✅ Temp directory ready:', this.tempDir);
     } catch (error) {
-      console.error('Failed to create temp directory:', error);
+      console.error('❌ Failed to create temp directory:', error);
+      // 使用备用目录
+      this.tempDir = path.join(process.cwd(), 'uploads', 'temp');
+      await fs.mkdir(this.tempDir, { recursive: true });
+      console.log('✅ Using backup temp directory:', this.tempDir);
     }
   }
 
@@ -260,7 +269,10 @@ export class RealVideoGenerationService {
     try {
       console.log('🎬 Starting local FFmpeg video generation');
       
+      // 确保temp目录存在且可写
+      await this.ensureTempDir();
       const outputPath = path.join(this.tempDir, `video_${Date.now()}.mp4`);
+      console.log('📁 Output path:', outputPath);
       const motionFilter = this.getFFmpegMotionFilter(options.effect, options.duration || 5);
       
       return new Promise((resolve, reject) => {

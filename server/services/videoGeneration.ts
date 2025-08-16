@@ -170,11 +170,16 @@ export class UltimateVideoGenerationService {
     try {
       console.log(`🎬 Starting ${options.effect} generation with ${this.generationMode} mode`);
       
-      // 导入真实视频生成服务
-      const { realVideoGeneration } = await import('./realVideoGeneration');
+      // 优先使用简单可靠的本地FFmpeg生成
+      console.log('🎬 Using simple local FFmpeg generation');
+      const { SimpleVideoGenerator } = await import('./simpleVideoGenerator');
+      const simpleGenerator = new SimpleVideoGenerator();
       
-      // 调用真实视频生成
-      const videoUrl = await realVideoGeneration.generateVideo(options);
+      const videoUrl = await simpleGenerator.generateVideo({
+        imageUrl: options.imageUrl,
+        effect: options.effect,
+        duration: options.duration || 5
+      });
       
       const generationTime = performance.now() - startTime;
       this.updateMetrics(generationTime, true);

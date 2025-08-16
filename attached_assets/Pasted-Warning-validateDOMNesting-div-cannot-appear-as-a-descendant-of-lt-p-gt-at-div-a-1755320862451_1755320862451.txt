@@ -1,0 +1,27 @@
+Warning: validateDOMNesting(...): <div> cannot appear as a descendant of &lt;p&gt;.
+    at div
+    at Badge (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/src/components/ui/badge.tsx:35:18)
+    at p
+    at div
+    at div
+    at div
+    at _c9 (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/src/components/ui/card.tsx:20:11)
+    at HoverCardEnhanced (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/src/components/ui/hover-card-enhanced.tsx:20:3)
+    at div
+    at FadeIn (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/src/components/ui/fade-in.tsx:21:3)
+    at div
+    at div
+    at div
+    at div
+    at UltimateCreatePage (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/src/pages/UltimateCreatePage.tsx:49:49)
+    at Route (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=14c1f0a6:323:16)
+    at Switch (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=14c1f0a6:379:17)
+    at Router (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/src/App.tsx?v=CRu1OCF17MLJXBjNTq_LI:29:49)
+    at Provider (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IO7CZYUM.js?v=14c1f0a6:44:15)
+    at TooltipProvider (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=14c1f0a6:2212:5)
+    at QueryClientProvider (https://ec1617fb-7187-4808-bfea-6843c9f96e4f-00-312xcomygo2a9.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=14c1f0a6:2805:3)
+    at App
+Generation failed: 
+Error {}
