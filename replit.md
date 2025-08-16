@@ -2,9 +2,9 @@
 
 ## Overview
 
-Draw to Video is a professional-grade React-based web application that transforms sketches into cinematic AI-generated videos. Designed to compete with industry leaders like Higgsfield AI, the platform offers zero-prompt visual direction, 50+ professional camera presets, and Hollywood-style motion controls. Users upload images and draw movement instructions directly on a professional canvas to guide video generation without any text prompts.
+Draw to Video is a world-class SaaS platform designed to compete directly with industry leaders like Higgsfield AI for Google's top 5 rankings for "draw to video". The platform transforms simple sketches into viral-quality AI-generated videos through zero-prompt visual direction, targeting the explosive "draw to video" trend on TikTok and Instagram.
 
-The application targets content creators, filmmakers, marketers, and visual artists who demand cinema-quality AI video generation. Key features include modern gradient dark theme UI, professional drawing tools with sequence numbering (1,2,3), 50+ camera movement presets (dolly shots, crane movements, FPV drone footage), and instant HD video generation.
+Built with professional SaaS design standards, the platform offers a premium user experience with modern gradient interfaces, comprehensive social proof, and conversion-optimized landing pages. Key differentiators include instant 5-10 second video generation, 50+ Hollywood-style camera presets, and a freemium model designed for viral growth among content creators.
 
 ## User Preferences
 
@@ -13,14 +13,14 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend Architecture
-- **Framework**: React 18 with TypeScript and Vite for lightning-fast development
-- **UI Design**: Professional gradient dark theme matching industry standards (Higgsfield-inspired)
-- **UI Components**: shadcn/ui component library with custom cinema-grade styling
-- **Styling**: Tailwind CSS with dark theme variables and gradient designs
-- **State Management**: TanStack Query for server state and React hooks for local state
-- **Routing**: Wouter for lightweight client-side routing
-- **Professional Canvas**: HTML5 Canvas with sequence numbering, 50+ camera presets, and motion tracking
-- **File Upload**: Drag-and-drop with professional upload interface
+- **Framework**: React 18 with TypeScript and Vite optimized for SEO performance (<2s load time)
+- **Design System**: Premium SaaS template with professional gradient themes and conversion optimization
+- **Landing Page**: World-class conversion funnel with social proof, testimonials, and pricing tiers
+- **UI Components**: shadcn/ui with custom styling matching top-tier SaaS platforms
+- **SEO Optimization**: Structured data, meta tags, and performance metrics targeting Google rankings
+- **User Flow**: Landing → Upload → Draw → Generate → Download with viral sharing features
+- **Professional Canvas**: Advanced drawing tools with 50+ cinema-grade camera presets
+- **Mobile-First**: Responsive design optimized for TikTok/Instagram creators
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express server
