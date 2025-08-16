@@ -6,7 +6,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { ultimateVideoGeneration } from "../services/videoGeneration";
-import { UltimateVideoGenerationSchema, VideoGenerationResultSchema } from "@shared/ultimateSchema";
+import { UltimateVideoGenerationSchema } from "@shared/ultimateSchema";
 import { UltimateCameraEngine } from "../services/ultimateCameraEngine";
 
 const router = Router();
@@ -51,12 +51,9 @@ router.post("/generate", async (req, res) => {
       }
     };
 
-    // 验证响应数据
-    const validatedResult = VideoGenerationResultSchema.parse(result);
-    
     res.json({
       success: true,
-      data: validatedResult,
+      data: result,
       message: `${validatedData.effect} video generated successfully`
     });
 
@@ -288,4 +285,4 @@ router.get("/stats", (req, res) => {
   });
 });
 
-export { router as ultimateVideoRouter };
+export default router;

@@ -1,117 +1,137 @@
+/**
+ * 🎬 Ultimate Draw to Video Schema
+ * 终极视频生成系统的类型定义和数据结构
+ */
+
 import { z } from "zod";
 
-// 🎬 终极Draw to Video数据模型 - 超越Higgsfield
+// 基础路径点类型
+export interface PathPoint {
+  x: number;
+  y: number;
+  timestamp?: number;
+}
+
+// 路径特征分析
+export interface PathFeatures {
+  shape: 'straight' | 'circular' | 'spiral' | 'freeform';
+  avgCurvature: number;
+  maxCurvature: number;
+  pathLength: number;
+  speedVariation: number;
+  avgSpeed: number;
+  suggestedEffect: string;
+}
+
+// 电影级轨迹数据
+export interface CinematicTrajectory {
+  positions: number[][];
+  orientations: number[][];
+  fov: number[];
+  focusDistance: number[];
+  aperture: number[];
+  motionBlur: number[];
+  speedCurve: number[];
+  metadata: {
+    fps: number;
+    duration: number;
+    totalFrames: number;
+    preset: string;
+    quality: string;
+  };
+  colorGrading?: {
+    temperature: number;
+    tint: number;
+    saturation: number;
+    contrast: number;
+    highlights: number;
+    shadows: number;
+    style: string;
+  };
+}
+
+// 视频生成选项
+export interface UltimateVideoGeneration {
+  imageUrl: string;
+  pathData: PathPoint[];
+  effect: string;
+  duration?: number;
+  quality?: 'preview' | 'hd' | '4k' | 'cinema';
+  socialPlatform?: 'tiktok' | 'instagram' | 'youtube' | 'general';
+  aspectRatio?: '16:9' | '9:16' | '1:1' | '4:5';
+  style?: 'realistic' | 'cinematic' | 'dramatic' | 'ethereal';
+}
+
+// 视频生成结果
+export interface VideoGenerationResult {
+  videoUrl: string;
+  thumbnailUrl?: string;
+  metadata: {
+    duration: number;
+    fps: number;
+    resolution: string;
+    fileSize: number;
+    generationTime: number;
+  };
+  analytics?: {
+    qualityScore: number;
+    motionSmoothnessScore: number;
+    visualAppealScore: number;
+  };
+}
+
+// 分析结果
+export interface PathAnalysisResult {
+  features: PathFeatures;
+  suggestedEffects: string[];
+  complexity: 'simple' | 'moderate' | 'complex';
+  estimatedGenerationTime: number;
+}
+
+// API响应类型
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  timestamp: number;
+}
+
+// Zod验证模式
 export const PathPointSchema = z.object({
   x: z.number(),
   y: z.number(),
-  timestamp: z.number().optional(),
-  pressure: z.number().optional(),
-});
-
-export const PathFeaturesSchema = z.object({
-  shape: z.enum(['circular', 'spiral', 'straight', 'freeform']),
-  avgCurvature: z.number(),
-  maxCurvature: z.number(),
-  pathLength: z.number(),
-  speedVariation: z.number(),
-  avgSpeed: z.number(),
-  suggestedEffect: z.string(),
-});
-
-export const CinematicTrajectorySchema = z.object({
-  positions: z.array(z.array(z.number())),
-  orientations: z.array(z.array(z.number())),
-  fov: z.array(z.number()),
-  focusDistance: z.array(z.number()),
-  aperture: z.array(z.number()),
-  motionBlur: z.array(z.number()),
-  speedCurve: z.array(z.number()),
-  metadata: z.object({
-    fps: z.number(),
-    duration: z.number(),
-    totalFrames: z.number(),
-    preset: z.string(),
-    quality: z.string(),
-  }),
-  colorGrading: z.object({
-    temperature: z.number(),
-    tint: z.number(),
-    saturation: z.number(),
-    contrast: z.number(),
-    highlights: z.number(),
-    shadows: z.number(),
-    style: z.string(),
-  }).optional(),
+  timestamp: z.number().optional()
 });
 
 export const UltimateVideoGenerationSchema = z.object({
   imageUrl: z.string().url(),
-  pathData: z.array(PathPointSchema),
-  effect: z.enum([
-    'zoom_in', 
-    'orbit', 
-    'pull_back', 
-    'dramatic_spiral', 
-    'vertigo_effect', 
-    'bullet_time', 
-    'crash_zoom', 
-    'floating_follow'
-  ]),
-  duration: z.number().min(1).max(30).optional().default(5),
-  quality: z.enum(['preview', 'hd', '4k', 'cinema']).optional().default('hd'),
-  socialPlatform: z.enum(['tiktok', 'instagram', 'youtube', 'general']).optional().default('general'),
-  aspectRatio: z.enum(['16:9', '9:16', '1:1', '4:5']).optional().default('16:9'),
-  style: z.enum(['realistic', 'cinematic', 'dramatic', 'ethereal']).optional().default('cinematic'),
+  pathData: z.array(PathPointSchema).min(1),
+  effect: z.string(),
+  duration: z.number().min(1).max(30).default(5),
+  quality: z.enum(['preview', 'hd', '4k', 'cinema']).default('hd'),
+  socialPlatform: z.enum(['tiktok', 'instagram', 'youtube', 'general']).default('general'),
+  aspectRatio: z.enum(['16:9', '9:16', '1:1', '4:5']).default('16:9'),
+  style: z.enum(['realistic', 'cinematic', 'dramatic', 'ethereal']).default('cinematic')
 });
 
-export const VideoGenerationResultSchema = z.object({
-  videoUrl: z.string().url(),
-  previewUrl: z.string().url().optional(),
-  thumbnailUrl: z.string().url().optional(),
-  metadata: z.object({
-    duration: z.number(),
-    resolution: z.string(),
-    fps: z.number(),
-    fileSize: z.number().optional(),
-    effect: z.string(),
-    generationTime: z.number(),
-    strategy: z.string(),
-  }),
-  analytics: z.object({
-    pathComplexity: z.number(),
-    motionIntensity: z.number(),
-    qualityScore: z.number(),
-    viralPotential: z.number().optional(),
-  }).optional(),
+export const PathAnalysisSchema = z.object({
+  pathData: z.array(PathPointSchema).min(1)
 });
 
-// 类型导出
-export type PathPoint = z.infer<typeof PathPointSchema>;
-export type PathFeatures = z.infer<typeof PathFeaturesSchema>;
-export type CinematicTrajectory = z.infer<typeof CinematicTrajectorySchema>;
-export type UltimateVideoGeneration = z.infer<typeof UltimateVideoGenerationSchema>;
-export type VideoGenerationResult = z.infer<typeof VideoGenerationResultSchema>;
+// 相机效果列表
+export const ULTIMATE_CAMERA_EFFECTS = [
+  'zoom_in',
+  'orbit', 
+  'pull_back',
+  'dramatic_spiral',
+  'vertigo_effect',
+  'bullet_time',
+  'crash_zoom',
+  'floating_follow'
+] as const;
 
-// 性能监控和分析
-export const PerformanceMetricsSchema = z.object({
-  generationCount: z.number(),
-  avgGenerationTime: z.number(),
-  successRate: z.number(),
-  currentLoad: z.number(),
-  popularEffects: z.array(z.string()),
-  userSatisfaction: z.number().optional(),
-});
+export type UltimateCameraEffect = typeof ULTIMATE_CAMERA_EFFECTS[number];
 
-export const UserAnalyticsSchema = z.object({
-  userId: z.string().optional(),
-  sessionId: z.string(),
-  device: z.string(),
-  platform: z.string(),
-  effects: z.array(z.string()),
-  generationCount: z.number(),
-  totalDuration: z.number(),
-  createdAt: z.date(),
-});
-
-export type PerformanceMetrics = z.infer<typeof PerformanceMetricsSchema>;
-export type UserAnalytics = z.infer<typeof UserAnalyticsSchema>;
+// 用于类型推导的工具类型
+export type UltimateVideoGenerationInput = z.infer<typeof UltimateVideoGenerationSchema>;
+export type PathAnalysisInput = z.infer<typeof PathAnalysisSchema>;

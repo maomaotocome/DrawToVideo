@@ -221,6 +221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // 注册终极视频API路由
+  const { default: ultimateVideoRouter } = await import('./api/ultimate-video');
   app.use("/api/ultimate-video", ultimateVideoRouter);
 
   const httpServer = createServer(app);
