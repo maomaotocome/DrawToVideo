@@ -281,9 +281,9 @@ export function UltimateCanvasDrawing({
               <MousePointer2 className="w-5 h-5 text-purple-600" />
               专业绘图画布
             </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
+            <div className="text-sm text-muted-foreground mt-1">
               绘制路径指定 <Badge variant="outline" className="mx-1">{selectedEffect}</Badge> 相机运动方向
-            </p>
+            </div>
           </div>
           
           <div className="flex items-center gap-2">
