@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Crown, Zap, Video, Sparkles } from "lucide-react";
@@ -86,6 +86,10 @@ export function SubscriptionModal({ isOpen, onClose, trigger = "generation", onU
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl p-0 bg-black text-white border-gray-800">
+        <DialogHeader className="sr-only">
+          <DialogTitle>{content.title}</DialogTitle>
+          <DialogDescription>{content.description}</DialogDescription>
+        </DialogHeader>
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-50 text-white hover:text-gray-300 transition-colors"

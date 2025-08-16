@@ -337,13 +337,13 @@ export function FixedCanvasDrawing({
         <h3 className="text-lg font-semibold flex items-center justify-center gap-2">
           Draw Camera Movement Path
         </h3>
-        <p className="text-sm text-gray-600">
-          Click and drag to draw camera movement direction (Effect: 
-          <Badge variant="outline" className="ml-1">
+        <div className="text-sm text-gray-600 flex items-center justify-center gap-1 flex-wrap">
+          <span>Click and drag to draw camera movement direction (Effect:</span>
+          <Badge variant="outline">
             {selectedEffect.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
           </Badge>
-          )
-        </p>
+          <span>)</span>
+        </div>
       </div>
 
       {/* Canvas容器 */}
