@@ -69,13 +69,13 @@ export function UserGuidancePanel({ currentStep, selectedEffect, pathLength = 0 
       
       case "processing":
         return {
-          title: "第四步：生成中",
-          description: "AI正在为您制作专业视频",
+          title: "Step 4: Generating Video",
+          description: "AI is creating your professional video",
           instructions: [
-            "使用先进的AI技术生成",
-            "预计时间：10-30 秒",
-            "生成过程中请勿关闭页面",
-            "即将完成，请稍候..."
+            "Using advanced AI technology",
+            "Estimated time: 10-30 seconds",
+            "Please don't close the page",
+            "Almost complete, please wait..."
           ],
           icon: <Play className="w-6 h-6 text-orange-500" />,
           color: "border-orange-200 bg-orange-50"
@@ -83,13 +83,13 @@ export function UserGuidancePanel({ currentStep, selectedEffect, pathLength = 0 
       
       case "completed":
         return {
-          title: "第五步：完成",
-          description: "您的专业视频已生成完成",
+          title: "Step 5: Complete",
+          description: "Your professional video is ready",
           instructions: [
-            "视频生成成功",
-            "可以下载保存到本地",
-            "分享到社交媒体",
-            "重新制作其他视频"
+            "Video generated successfully",
+            "Download to save locally",
+            "Share on social media",
+            "Create another video"
           ],
           icon: <CheckCircle className="w-6 h-6 text-green-500" />,
           color: "border-green-200 bg-green-50"
@@ -97,8 +97,8 @@ export function UserGuidancePanel({ currentStep, selectedEffect, pathLength = 0 
       
       default:
         return {
-          title: "开始制作",
-          description: "按照步骤完成视频制作",
+          title: "Get Started",
+          description: "Follow the steps to create your video",
           instructions: [],
           icon: <Info className="w-6 h-6 text-gray-500" />,
           color: "border-gray-200 bg-gray-50"
@@ -131,12 +131,12 @@ export function UserGuidancePanel({ currentStep, selectedEffect, pathLength = 0 
         
         {currentStep === "drawing" && (
           <div className="mt-4 p-3 bg-white rounded-lg border">
-            <h4 className="font-medium text-sm mb-2">💡 绘制技巧：</h4>
+            <h4 className="font-medium text-sm mb-2">💡 Drawing Tips:</h4>
             <ul className="text-xs text-gray-600 space-y-1">
-              <li>• 慢速绘制获得更平滑的路径</li>
-              <li>• 从左到右：相机向右移动</li>
-              <li>• 从上到下：相机向下移动</li>
-              <li>• 圆形路径：相机环绕运动</li>
+              <li>• Draw slowly for smoother paths</li>
+              <li>• Left to right: camera moves right</li>
+              <li>• Top to bottom: camera moves down</li>
+              <li>• Circular path: camera orbits around</li>
             </ul>
           </div>
         )}

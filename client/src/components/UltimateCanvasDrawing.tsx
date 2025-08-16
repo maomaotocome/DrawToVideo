@@ -18,7 +18,7 @@ interface UltimateCanvasDrawingProps {
   isGenerating?: boolean;
 }
 
-// 相机效果中文名称映射
+// Camera effect name mapping
 function getCameraEffectName(effect: string): string {
   const effectNames = {
     'zoom_in': 'Zoom In',

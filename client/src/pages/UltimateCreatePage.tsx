@@ -26,7 +26,7 @@ import {
   Timer
 } from "lucide-react";
 
-// 终极相机效果类型
+// Ultimate Camera Effect Types
 type UltimateCameraEffect = 
   | "zoom_in" 
   | "orbit" 
@@ -55,6 +55,21 @@ export default function UltimateCreatePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
+  // Camera effect name mapping function
+  const getCameraEffectName = (effect: string): string => {
+    const effectNames: Record<string, string> = {
+      'zoom_in': 'Zoom In',
+      'orbit': 'Orbit Shot', 
+      'pull_back': 'Pull Back',
+      'dramatic_spiral': 'Dramatic Spiral',
+      'vertigo_effect': 'Vertigo Effect',
+      'bullet_time': 'Bullet Time',
+      'crash_zoom': 'Crash Zoom',
+      'floating_follow': 'Floating Follow'
+    };
+    return effectNames[effect] || effect;
+  };
+  
   const { 
     isGenerating, 
     progress, 
@@ -65,21 +80,21 @@ export default function UltimateCreatePage() {
     resetGeneration
   } = useUltimateVideo();
 
-  // 检查是否有从落地页上传的图片
+  // Check for uploaded image from landing page
   useEffect(() => {
     const sessionImageUrl = getUploadedImageFromSession();
     if (sessionImageUrl) {
       setUploadedImageUrl(sessionImageUrl);
       setCurrentStep("drawing");
-      clearUploadedImageSession(); // 使用后清理
+      clearUploadedImageSession(); // Clean up after use
       toast({
-        title: "图片已加载",
-        description: "开始绘制运镜路径",
+        title: "Image Loaded",
+        description: "Start drawing camera path",
       });
     }
   }, [toast]);
 
-  // 示例图片
+  // Sample Images
   const SAMPLE_IMAGES = [
     "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop",
     "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=600&fit=crop",
@@ -196,7 +211,7 @@ export default function UltimateCreatePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-purple-950 dark:via-blue-950 dark:to-indigo-950">
       <div className="container mx-auto px-4 py-8">
-        {/* 顶部标题和进度 */}
+        {/* Header and Progress */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Button 
@@ -206,7 +221,7 @@ export default function UltimateCreatePage() {
               className="absolute left-4 top-4"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              返回
+              Back
             </Button>
             
             <Sparkles className="w-8 h-8 text-purple-600" />
@@ -219,7 +234,7 @@ export default function UltimateCreatePage() {
             Transform your drawings into viral videos with AI-powered cinema effects
           </p>
 
-          {/* 步骤进度条 */}
+          {/* Progress Bar */}
           <div className="flex items-center justify-center gap-4 max-w-md mx-auto">
             {[
               { step: 'upload', label: 'Upload', icon: Upload },
@@ -243,10 +258,10 @@ export default function UltimateCreatePage() {
           </div>
         </div>
 
-        {/* 主要内容区域 */}
+        {/* Main Content Area */}
         <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-6">
           
-          {/* 左侧：用户指导面板 */}
+          {/* Left: User Guidance Panel */}
           <div className="lg:col-span-1">
             <UserGuidancePanel 
               currentStep={currentStep}
@@ -255,10 +270,10 @@ export default function UltimateCreatePage() {
             />
           </div>
           
-          {/* 右侧：主要工作区域 */}
+          {/* Right: Main Work Area */}
           <div className="lg:col-span-2 space-y-6">
           
-          {/* 步骤1: 上传图片 */}
+          {/* Step 1: Upload Image */}
           {currentStep === "upload" && (
             <Card className="w-full">
               <CardHeader>
@@ -308,7 +323,7 @@ export default function UltimateCreatePage() {
                       >
                         <img
                           src={imageUrl}
-                          alt={`示例 ${index + 1}`}
+                          alt={`Sample ${index + 1}`}
                           className="w-full h-24 object-cover"
                         />
                       </div>
@@ -319,7 +334,7 @@ export default function UltimateCreatePage() {
             </Card>
           )}
 
-          {/* 步骤2: 绘制路径 */}
+          {/* Step 2: Draw Path */}
           {currentStep === "drawing" && uploadedImageUrl && (
             <div className="space-y-6">
               <UltimateCanvasDrawing
@@ -339,7 +354,7 @@ export default function UltimateCreatePage() {
             </div>
           )}
 
-          {/* 步骤3: 选择效果 */}
+          {/* Step 3: Choose Effect */}
           {currentStep === "effect" && (
             <div className="space-y-6">
               <UltimateEffectSelector
@@ -369,7 +384,7 @@ export default function UltimateCreatePage() {
             </div>
           )}
 
-          {/* 步骤4: 处理中 */}
+          {/* Step 4: Processing */}
           {currentStep === "processing" && (
             <Card className="w-full max-w-2xl mx-auto">
               <CardHeader>
@@ -381,21 +396,21 @@ export default function UltimateCreatePage() {
               <CardContent className="space-y-6">
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">进度</span>
+                    <span className="text-sm font-medium">Progress</span>
                     <span className="text-sm text-muted-foreground">{progress}%</span>
                   </div>
                   <Progress value={progress} className="w-full" />
                   <p className="text-sm text-muted-foreground text-center">
-                    {generationStep || '准备生成...'}
+                    {generationStep || 'Preparing to generate...'}
                   </p>
                 </div>
 
                 <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2">生成信息</h4>
+                  <h4 className="font-medium mb-2">Generation Details</h4>
                   <div className="text-sm space-y-1">
-                    <p>效果: <Badge variant="outline">{selectedEffect}</Badge></p>
-                    <p>路径点数: {pathData.length}</p>
-                    <p>预计时间: 5-15秒</p>
+                    <p>Effect: <Badge variant="outline">{getCameraEffectName(selectedEffect)}</Badge></p>
+                    <p>Path Points: {pathData.length}</p>
+                    <p>Estimated Time: 5-15 seconds</p>
                   </div>
                 </div>
                 
@@ -408,7 +423,7 @@ export default function UltimateCreatePage() {
                       onClick={() => setCurrentStep("effect")}
                       className="mt-2"
                     >
-                      重试
+                      Retry
                     </Button>
                   </div>
                 )}
@@ -416,17 +431,17 @@ export default function UltimateCreatePage() {
             </Card>
           )}
 
-          {/* 步骤5: 完成 */}
+          {/* Step 5: Complete */}
           {currentStep === "completed" && result && (
             <Card className="w-full max-w-2xl mx-auto">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-600" />
-                  视频生成完成！
+                  Video Generated Successfully!
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* 视频预览 */}
+                {/* Video Preview */}
                 <div className="aspect-video bg-black rounded-lg overflow-hidden">
                   <video 
                     src={result.videoUrl}
@@ -434,40 +449,40 @@ export default function UltimateCreatePage() {
                     className="w-full h-full object-cover"
                     poster={result.thumbnailUrl}
                   >
-                    您的浏览器不支持视频播放
+                    Your browser does not support video playback
                   </video>
                 </div>
 
-                {/* 视频信息 */}
+                {/* Video Information */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
                   <div className="text-center">
                     <p className="text-2xl font-bold text-green-600">{result.analytics?.qualityScore?.toFixed(1) || '9.2'}</p>
-                    <p className="text-xs text-gray-600">质量评分</p>
+                    <p className="text-xs text-gray-600">Quality Score</p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-blue-600">{result.metadata.resolution}</p>
-                    <p className="text-xs text-gray-600">分辨率</p>
+                    <p className="text-xs text-gray-600">Resolution</p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-purple-600">{result.metadata.fps}fps</p>
-                    <p className="text-xs text-gray-600">帧率</p>
+                    <p className="text-xs text-gray-600">Frame Rate</p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-pink-600">{result.metadata.generationTime.toFixed(1)}s</p>
-                    <p className="text-xs text-gray-600">生成时间</p>
+                    <p className="text-xs text-gray-600">Generation Time</p>
                   </div>
                 </div>
 
-                {/* 操作按钮 */}
+                {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button className="flex-1" size="lg">
                     <Download className="w-4 h-4 mr-2" />
-                    下载视频
+                    Download Video
                   </Button>
                   
                   <Button variant="outline" className="flex-1" size="lg">
                     <Share2 className="w-4 h-4 mr-2" />
-                    分享视频
+                    Share Video
                   </Button>
                   
                   <Button 
@@ -475,7 +490,7 @@ export default function UltimateCreatePage() {
                     onClick={handleRestart}
                     size="lg"
                   >
-                    重新创建
+                    Create New Video
                   </Button>
                 </div>
               </CardContent>
