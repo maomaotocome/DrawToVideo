@@ -258,30 +258,47 @@ export class RealVideoGenerationService {
     console.log('🎬 Using high-quality local generation with FFmpeg');
     
     try {
-      // 导入FFmpeg处理器
-      const { ffmpegProcessor } = await import('./ffmpegProcessor');
+      console.log('🎬 Starting local FFmpeg video generation');
       
-      // 检查FFmpeg可用性
-      const isFFmpegAvailable = await ffmpegProcessor.checkFFmpegAvailability();
-      if (!isFFmpegAvailable) {
-        throw new Error('FFmpeg not available for local video generation');
-      }
+      const outputPath = path.join(this.tempDir, `video_${Date.now()}.mp4`);
+      const motionFilter = this.getFFmpegMotionFilter(options.effect, options.duration || 5);
       
-      // 生成运动视频
-      const videoPath = await ffmpegProcessor.createMotionVideo(
-        imagePath, 
-        options.effect, 
-        options.duration || 5
-      );
-      
-      // 应用视觉增强
-      const enhancedVideoPath = await ffmpegProcessor.enhanceVideo(videoPath, options.effect);
-      
-      // 上传到对象存储
-      const uploadedUrl = await this.uploadToStorage(enhancedVideoPath);
-      
-      console.log('✅ High-quality local video generated successfully');
-      return uploadedUrl;
+      return new Promise((resolve, reject) => {
+        ffmpeg(imagePath)
+          .inputOptions([
+            '-loop 1',
+            '-t', (options.duration || 5).toString()
+          ])
+          .outputOptions([
+            '-c:v libx264',
+            '-pix_fmt yuv420p',
+            '-vf', motionFilter,
+            '-r 24',
+            '-shortest'
+          ])
+          .output(outputPath)
+          .on('start', (commandLine) => {
+            console.log('🎬 FFmpeg started:', commandLine);
+          })
+          .on('progress', (progress) => {
+            console.log('🎬 Processing: ' + Math.round(progress.percent || 0) + '% done');
+          })
+          .on('end', async () => {
+            try {
+              console.log('✅ Local video generation completed');
+              // 上传到静态文件服务
+              const publicUrl = await this.moveToPublicFolder(outputPath);
+              resolve(publicUrl);
+            } catch (uploadError) {
+              reject(uploadError);
+            }
+          })
+          .on('error', (err) => {
+            console.error('❌ FFmpeg error:', err);
+            reject(new Error(`Local generation failed: ${err.message}`));
+          })
+          .run();
+      });
       
     } catch (error) {
       console.error('Local video generation failed:', error);
@@ -308,11 +325,44 @@ export class RealVideoGenerationService {
   }
 
   /**
-   * 上传到对象存储
+   * 移动视频到公共文件夹
+   */
+  private async moveToPublicFolder(videoPath: string): Promise<string> {
+    try {
+      const uploadsDir = path.join(process.cwd(), 'uploads');
+      await fs.mkdir(uploadsDir, { recursive: true });
+      
+      const filename = `video_${Date.now()}.mp4`;
+      const publicPath = path.join(uploadsDir, filename);
+      
+      // 复制文件到公共目录
+      await fs.copyFile(videoPath, publicPath);
+      
+      // 删除临时文件
+      await fs.unlink(videoPath).catch(() => {});
+      
+      // 构造公开访问URL
+      const baseUrl = process.env.REPLIT_DOMAINS 
+        ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
+        : `http://localhost:${process.env.PORT || 5000}`;
+      
+      const publicUrl = `${baseUrl}/uploads/${filename}`;
+      console.log('✅ Video uploaded to:', publicUrl);
+      
+      return publicUrl;
+    } catch (error) {
+      console.error('❌ Failed to move video to public folder:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 上传到对象存储（备用方案）
    */
   private async uploadToStorage(videoPath: string): Promise<string> {
     try {
-      // 使用 Replit 对象存储
+      // 使用简单的文件存储
+      return await this.moveToPublicFolder(videoPath);
       const fileName = `generated_${Date.now()}.mp4`;
       const formData = new FormData();
       formData.append('file', await fs.readFile(videoPath), fileName);
