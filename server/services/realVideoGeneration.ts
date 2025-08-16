@@ -7,7 +7,8 @@ import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
-const FormData = require('form-data');
+import FormData from 'form-data';
+import ffmpeg from 'fluent-ffmpeg';
 import { VideoGenerationOptions } from './videoGeneration';
 import { UltimateCameraEngine } from './ultimateCameraEngine';
 

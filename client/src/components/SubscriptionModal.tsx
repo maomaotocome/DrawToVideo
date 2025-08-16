@@ -48,6 +48,11 @@ const plans = {
 };
 
 export function SubscriptionModal({ isOpen, onClose, trigger = "generation", onUpgrade }: SubscriptionModalProps) {
+  // 强制允许用户关闭模态框
+  const handleClose = () => {
+    console.log('User closing subscription modal');
+    onClose();
+  };
   const getTriggerContent = () => {
     switch (trigger) {
       case "generation":
@@ -84,15 +89,16 @@ export function SubscriptionModal({ isOpen, onClose, trigger = "generation", onU
   const content = getTriggerContent();
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl p-0 bg-black text-white border-gray-800">
         <DialogHeader className="sr-only">
           <DialogTitle>{content.title}</DialogTitle>
           <DialogDescription>{content.description}</DialogDescription>
         </DialogHeader>
         <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-50 text-white hover:text-gray-300 transition-colors"
+          onClick={handleClose}
+          className="absolute top-4 right-4 z-50 text-white hover:text-gray-300 transition-colors bg-black/20 rounded-full p-2 backdrop-blur-sm"
+          aria-label="Close subscription modal"
         >
           <X className="w-6 h-6" />
         </button>
@@ -249,6 +255,16 @@ export function SubscriptionModal({ isOpen, onClose, trigger = "generation", onU
                 </div>
                 <p>Join 50,000+ creators making viral content with AI</p>
               </div>
+            </div>
+            
+            {/* 用户可以选择不升级的按钮 */}
+            <div className="mt-8 pt-6 border-t border-gray-800 text-center">
+              <button
+                onClick={handleClose}
+                className="text-gray-400 hover:text-white text-sm transition-colors underline"
+              >
+                Continue with Free Plan
+              </button>
             </div>
           </div>
         </div>
