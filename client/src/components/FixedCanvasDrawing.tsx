@@ -65,6 +65,15 @@ export function FixedCanvasDrawing({
   useEffect(() => {
     if (!imageUrl) return;
     
+    // 检查是否为旧的Object Storage URL，如果是则清除
+    if (imageUrl.includes('googleapis.com') && imageUrl.includes('.private')) {
+      console.error('Detected old Object Storage URL, clearing session...');
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.reload();
+      return;
+    }
+    
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;

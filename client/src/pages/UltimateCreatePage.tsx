@@ -21,6 +21,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthGate } from "@/components/AuthGate";
 import { getUploadedImageFromSession, clearUploadedImageSession } from "@/components/ImageUploadHandler";
+import { ClearSessionButton } from "@/components/ClearSessionButton";
 import { 
   ArrowLeft, 
   Upload, 

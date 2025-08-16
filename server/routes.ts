@@ -88,8 +88,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Serve uploaded images statically
   app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-  // 直接上传端点 - 避免URL参数过长问题
-  app.post("/api/images/direct-upload", directUploadHandler, handleDirectUpload);
+  // 直接上传端点 - 使用新的简单上传系统 (替换Object Storage)
+  app.post("/api/images/direct-upload", upload.single('file'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, error: 'No file uploaded' });
+      }
+      
+      const publicUrl = getPublicImageUrl(req.file.filename);
+      console.log('Direct upload - File:', req.file.filename, 'URL:', publicUrl);
+      
+      res.json({ 
+        success: true, 
+        publicUrl: publicUrl,
+        fileName: req.file.filename
+      });
+    } catch (error) {
+      console.error('Direct upload error:', error);
+      res.status(500).json({ success: false, error: 'Upload failed' });
+    }
+  });
 
   // Get upload URL for project images
   app.post("/api/images/upload", async (req, res) => {

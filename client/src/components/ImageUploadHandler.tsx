@@ -46,7 +46,7 @@ export function ImageUploadHandler({
       formData.append('file', file);
       formData.append('public', 'true');
 
-      const uploadResponse = await fetch('/api/images/simple-upload', { 
+      const uploadResponse = await fetch('/api/images/direct-upload', { 
         method: 'POST',
         body: formData
       });
