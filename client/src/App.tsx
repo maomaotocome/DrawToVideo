@@ -21,13 +21,10 @@ function Router() {
     );
   }
 
-  if (!isAuthenticated) {
-    return <AuthGate onLogin={login} />;
-  }
-
   return (
     <Switch>
-      <Route path="/" component={WorldClassLanding} />
+      {/* 直接显示创建页面，如果未认证则在页面内处理 */}
+      <Route path="/" component={UltimateCreatePage} />
       <Route path="/create" component={UltimateCreatePage} />
       <Route path="/mvp-create" component={MVPCreatePage} />
       <Route component={NotFound} />

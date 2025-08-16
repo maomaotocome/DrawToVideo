@@ -13,11 +13,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { UltimateEffectSelector } from "@/components/UltimateEffectSelector";
-import { UltimateCanvasDrawing } from "@/components/UltimateCanvasDrawing";
+import { FixedCanvasDrawing } from "@/components/FixedCanvasDrawing";
 import { SubscriptionModal } from "@/components/SubscriptionModal";
 import { UserGuidancePanel } from "@/components/UserGuidancePanel";
 import { useUltimateVideo } from "@/hooks/useUltimateVideo";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthGate } from "@/components/AuthGate";
 import { getUploadedImageFromSession, clearUploadedImageSession } from "@/components/ImageUploadHandler";
 import { 
   ArrowLeft, 
@@ -51,6 +53,7 @@ interface PathPoint {
 }
 
 export default function UltimateCreatePage() {
+  const { isAuthenticated, isLoading, login } = useAuth();
   const [currentStep, setCurrentStep] = useState<WorkflowStep>("upload");
   const [selectedEffect, setSelectedEffect] = useState<UltimateCameraEffect>("zoom_in");
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("");
@@ -214,7 +217,7 @@ export default function UltimateCreatePage() {
         pathData,
         effect: selectedEffect,
         duration: 5,
-        quality: subscription.plan === 'free' ? 'sd' : 'hd',
+        quality: subscription.plan === 'free' ? 'preview' : 'hd',
         socialPlatform: 'general',
         aspectRatio: '16:9',
         style: 'cinematic'
@@ -235,6 +238,19 @@ export default function UltimateCreatePage() {
     setSelectedEffect("zoom_in");
     resetGeneration();
   };
+
+  // 如果用户未认证，显示认证界面
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AuthGate onLogin={login} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-purple-950 dark:via-blue-950 dark:to-indigo-950">
@@ -386,7 +402,7 @@ export default function UltimateCreatePage() {
           {/* Step 2: Draw Path */}
           {currentStep === "drawing" && uploadedImageUrl && (
             <div className="space-y-6">
-              <UltimateCanvasDrawing
+              <FixedCanvasDrawing
                 imageUrl={uploadedImageUrl}
                 selectedEffect={selectedEffect}
                 onPathChange={setPathData}
@@ -434,7 +450,7 @@ export default function UltimateCreatePage() {
                 {subscription.plan === 'free' && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
                     <p className="text-sm text-yellow-800 mb-2">
-                      Free plan: {getRemainingGenerations()} generations remaining • SD quality
+                      Free plan: {getRemainingGenerations()} generations remaining • Preview quality
                     </p>
                     <Button
                       size="sm"
@@ -499,7 +515,7 @@ export default function UltimateCreatePage() {
                   <div className="text-sm space-y-1">
                     <p>Effect: <Badge variant="outline">{getCameraEffectName(selectedEffect)}</Badge></p>
                     <p>Path Points: {pathData.length}</p>
-                    <p>Quality: {subscription.plan === 'free' ? 'SD (480p)' : 'HD (1080p)'}</p>
+                    <p>Quality: {subscription.plan === 'free' ? 'Preview (480p)' : 'HD (1080p)'}</p>
                     <p>Credits Used: 1/{subscription.creditsTotal}</p>
                     <p>Estimated Time: 5-15 seconds</p>
                   </div>
