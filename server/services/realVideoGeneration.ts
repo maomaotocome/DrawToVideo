@@ -247,48 +247,45 @@ export class RealVideoGenerationService {
   }
 
   /**
-   * 本地运动视频生成（ffmpeg 后备方案）
+   * 本地运动视频生成（高质量ffmpeg方案）
    */
   private async generateLocalMotionVideo(
     imagePath: string,
     options: VideoGenerationOptions
   ): Promise<string> {
     
-    return new Promise((resolve, reject) => {
-      const outputPath = path.join(this.tempDir, `video_${Date.now()}.mp4`);
-      const duration = options.duration || 5;
+    console.log('🎬 Using high-quality local generation with FFmpeg');
+    
+    try {
+      // 导入FFmpeg处理器
+      const { ffmpegProcessor } = await import('./ffmpegProcessor');
       
-      // 根据效果类型生成不同的 ffmpeg 滤镜
-      const motionFilter = this.getFFmpegMotionFilter(options.effect, duration);
+      // 检查FFmpeg可用性
+      const isFFmpegAvailable = await ffmpegProcessor.checkFFmpegAvailability();
+      if (!isFFmpegAvailable) {
+        throw new Error('FFmpeg not available for local video generation');
+      }
       
-      const ffmpeg = spawn('ffmpeg', [
-        '-loop', '1',
-        '-i', imagePath,
-        '-vf', motionFilter,
-        '-t', duration.toString(),
-        '-pix_fmt', 'yuv420p',
-        '-crf', '23',
-        '-preset', 'medium',
-        '-y',
-        outputPath
-      ]);
-
-      let stderr = '';
-      ffmpeg.stderr.on('data', (data) => {
-        stderr += data.toString();
-      });
-
-      ffmpeg.on('close', (code) => {
-        if (code === 0) {
-          // 上传到对象存储并返回URL
-          this.uploadToStorage(outputPath).then(resolve).catch(reject);
-        } else {
-          reject(new Error(`FFmpeg failed: ${stderr}`));
-        }
-      });
-
-      ffmpeg.on('error', reject);
-    });
+      // 生成运动视频
+      const videoPath = await ffmpegProcessor.createMotionVideo(
+        imagePath, 
+        options.effect, 
+        options.duration || 5
+      );
+      
+      // 应用视觉增强
+      const enhancedVideoPath = await ffmpegProcessor.enhanceVideo(videoPath, options.effect);
+      
+      // 上传到对象存储
+      const uploadedUrl = await this.uploadToStorage(enhancedVideoPath);
+      
+      console.log('✅ High-quality local video generated successfully');
+      return uploadedUrl;
+      
+    } catch (error) {
+      console.error('Local video generation failed:', error);
+      throw new Error(`Local generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   /**

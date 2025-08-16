@@ -5,7 +5,7 @@ import { ObjectStorageService } from "./objectStorage";
 import { insertProjectSchema } from "@shared/schema";
 import { z } from "zod";
 import { ultimateVideoGeneration } from "./services/videoGeneration";
-import { ultimateVideoRouter } from "./api/ultimate-video";
+
 
 // Helper function to convert annotations to descriptive prompt
 function generatePromptFromAnnotations(annotations: any[]): string {
