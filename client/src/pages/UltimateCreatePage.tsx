@@ -110,6 +110,14 @@ export default function UltimateCreatePage() {
   useEffect(() => {
     const sessionImageUrl = getUploadedImageFromSession();
     if (sessionImageUrl) {
+      // 验证URL是否有效，如果是旧的Object Storage URL则忽略
+      if (sessionImageUrl.includes('googleapis.com') && sessionImageUrl.includes('.private')) {
+        console.log('Ignoring old broken Object Storage URL');
+        clearUploadedImageSession();
+        setCurrentStep("upload");
+        return;
+      }
+      
       setUploadedImageUrl(sessionImageUrl);
       setCurrentStep("drawing");
       clearUploadedImageSession(); // Clean up after use

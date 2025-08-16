@@ -70,7 +70,10 @@ export function FixedCanvasDrawing({
       console.error('Detected old Object Storage URL, clearing session...');
       sessionStorage.clear();
       localStorage.clear();
-      window.location.reload();
+      // 强制返回上传页面
+      setTimeout(() => {
+        window.location.href = '/create';
+      }, 100);
       return;
     }
     
@@ -412,9 +415,15 @@ export function FixedCanvasDrawing({
         
         {!imageUrl && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
-            <div className="text-center">
+            <div className="text-center space-y-3">
               <p className="text-gray-600">No image uploaded</p>
-              <p className="text-xs text-gray-400">Please upload an image first</p>
+              <p className="text-xs text-gray-400">Please upload an image to start drawing</p>
+              <button 
+                onClick={() => window.location.href = '/create'}
+                className="text-sm text-purple-600 hover:text-purple-800 underline"
+              >
+                Go to Upload
+              </button>
             </div>
           </div>
         )}
