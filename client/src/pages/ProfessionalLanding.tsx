@@ -20,7 +20,13 @@ import {
   Download,
   Award,
   Target,
-  BarChart3
+  BarChart3,
+  Shield,
+  Rocket,
+  Eye,
+  Heart,
+  Infinity,
+  ChevronDown
 } from "lucide-react";
 
 export default function ProfessionalLanding() {
