@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { UltimateEffectSelector } from "@/components/UltimateEffectSelector";
 import { UltimateCanvasDrawing } from "@/components/UltimateCanvasDrawing";
+import { UserGuidancePanel } from "@/components/UserGuidancePanel";
 import { useUltimateVideo } from "@/hooks/useUltimateVideo";
 import { getUploadedImageFromSession, clearUploadedImageSession } from "@/components/ImageUploadHandler";
 import { 

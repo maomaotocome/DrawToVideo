@@ -18,6 +18,21 @@ interface UltimateCanvasDrawingProps {
   isGenerating?: boolean;
 }
 
+// 相机效果中文名称映射
+function getCameraEffectName(effect: string): string {
+  const effectNames = {
+    'zoom_in': '推进特写',
+    'orbit': '环绕拍摄',
+    'pull_back': '拉远全景',
+    'dramatic_spiral': '螺旋戏剧',
+    'vertigo_effect': '眩晕效果',
+    'bullet_time': '子弹时间',
+    'crash_zoom': '冲击推进',
+    'floating_follow': '悬浮跟随'
+  };
+  return effectNames[effect] || effect;
+}
+
 export function UltimateCanvasDrawing({ 
   imageUrl, 
   onPathChange, 
@@ -279,10 +294,10 @@ export function UltimateCanvasDrawing({
           <div>
             <CardTitle className="flex items-center gap-2">
               <MousePointer2 className="w-5 h-5 text-purple-600" />
-              专业绘图画布
+              第二步：绘制相机运动路径
             </CardTitle>
             <div className="text-sm text-muted-foreground mt-1">
-              绘制路径指定 <Badge variant="outline" className="mx-1">{selectedEffect}</Badge> 相机运动方向
+              在图片上用鼠标绘制路径，指定相机运动方向（当前效果：<Badge variant="outline" className="mx-1">{getCameraEffectName(selectedEffect)}</Badge>）
             </div>
           </div>
           
