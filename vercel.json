@@ -4,7 +4,31 @@
   "installCommand": "npm install",
   "devCommand": "npm run dev",
   "framework": null,
+  "functions": {
+    "api/ultimate-video/generate.ts": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 300
+    },
+    "api/ultimate-video/analyze-path.ts": {
+      "runtime": "nodejs18.x"
+    },
+    "api/ultimate-video/effects.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/ultimate-video/generate",
+      "destination": "/api/ultimate-video/generate"
+    },
+    {
+      "source": "/api/ultimate-video/analyze-path",
+      "destination": "/api/ultimate-video/analyze-path"
+    },
+    {
+      "source": "/api/ultimate-video/effects",
+      "destination": "/api/ultimate-video/effects"
+    },
     {
       "source": "/((?!api).*)",
       "destination": "/index.html"

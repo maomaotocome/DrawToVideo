@@ -5,6 +5,7 @@
 
 import { Router } from "express";
 import { z } from "zod";
+import { realVideoGenerator } from "../services/realVideoGenerator";
 import { ultimateVideoGeneration } from "../services/videoGeneration";
 import { UltimateVideoGenerationSchema } from "@shared/ultimateSchema";
 import { UltimateCameraEngine } from "../services/ultimateCameraEngine";
@@ -23,33 +24,15 @@ router.post("/generate", async (req, res) => {
     // 验证请求数据
     const validatedData = UltimateVideoGenerationSchema.parse(req.body);
     
-    // 生成视频
-    const startTime = Date.now();
-    const videoUrl = await ultimateVideoGeneration.generateVideo(validatedData);
-    const generationTime = Date.now() - startTime;
-    
-    // 构建响应
-    const result = {
-      videoUrl,
-      previewUrl: videoUrl + "?preview=true",
-      thumbnailUrl: videoUrl.replace(".mp4", "_thumb.jpg"),
-      metadata: {
-        duration: validatedData.duration || 5,
-        resolution: validatedData.quality === '4k' ? '4096x2160' : 
-                   validatedData.quality === 'cinema' ? '2048x1080' : '1920x1080',
-        fps: 24,
-        fileSize: Math.floor(Math.random() * 50) + 10, // MB (模拟)
-        effect: validatedData.effect,
-        generationTime: generationTime / 1000,
-        strategy: 'balanced'
-      },
-      analytics: {
-        pathComplexity: Math.random() * 10,
-        motionIntensity: Math.random() * 10,
-        qualityScore: 8.5 + Math.random() * 1.5,
-        viralPotential: Math.random() * 10
-      }
-    };
+    // 🚀 使用真实视频生成器 - Day 1 核心实现
+    console.log("🎬 Using REAL Video Generator (超越Higgsfield模式)");
+    const result = await realVideoGenerator.generateVideo({
+      imageUrl: validatedData.imageUrl,
+      effect: validatedData.effect,
+      pathData: validatedData.pathData,
+      duration: validatedData.duration,
+      quality: validatedData.quality
+    });
 
     res.json({
       success: true,

@@ -50,8 +50,8 @@ export function useUltimateVideo() {
       // Step 3: 视频生成
       setState(prev => ({ ...prev, progress: 40, currentStep: `应用${options.effect}效果...` }));
       
-      // Mock data for demo purposes (since backend API is not available on static deployment)
-      const isMockMode = true; // Set to false when backend is available
+      // Real API integration - Day 1 of 7-day optimization plan
+      const isMockMode = false; // Now using REAL video generation!
       
       let responseData;
       
@@ -147,7 +147,7 @@ export function useUltimateVideo() {
 
   const analyzePathData = useCallback(async (pathData: PathPoint[]) => {
     try {
-      const isMockMode = true; // Set to false when backend is available
+      const isMockMode = false; // Real path analysis integration
       
       if (isMockMode) {
         // Simulate API delay
@@ -193,7 +193,7 @@ export function useUltimateVideo() {
 
   const getAvailableEffects = useCallback(async () => {
     try {
-      const isMockMode = true; // Set to false when backend is available
+      const isMockMode = false; // Real effects API integration
       
       if (isMockMode) {
         // Mock effects data
