@@ -277,6 +277,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { default: uploadRouter } = await import('./middleware/uploadHandler');
   app.use("/api/images", uploadRouter);
 
+  // 注册健康检查路由
+  const { default: healthRouter } = await import('./routes/health');
+  app.use("/api/health", healthRouter);
+
   const httpServer = createServer(app);
   return httpServer;
 }

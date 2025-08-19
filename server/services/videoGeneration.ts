@@ -170,12 +170,11 @@ export class UltimateVideoGenerationService {
     try {
       console.log(`🎬 Starting ${options.effect} generation with ${this.generationMode} mode`);
       
-      // 优先使用简单可靠的本地FFmpeg生成
-      console.log('🎬 Using simple local FFmpeg generation');
-      const { SimpleVideoGenerator } = await import('./simpleVideoGenerator');
-      const simpleGenerator = new SimpleVideoGenerator();
+      // 使用鲁棒性视频生成器 - 自动处理FFmpeg缺失等问题
+      console.log('🎬 Using robust video generation with automatic fallbacks');
+      const { robustVideoGenerator } = await import('./robustVideoGenerator');
       
-      const videoUrl = await simpleGenerator.generateVideo({
+      const videoUrl = await robustVideoGenerator.generateVideo({
         imageUrl: options.imageUrl,
         effect: options.effect,
         duration: options.duration || 5
@@ -184,19 +183,29 @@ export class UltimateVideoGenerationService {
       const generationTime = performance.now() - startTime;
       this.updateMetrics(generationTime, true);
       
-      console.log(`✅ Real video generated in ${(generationTime / 1000).toFixed(2)}s`);
+      console.log(`✅ Video generated successfully in ${(generationTime / 1000).toFixed(2)}s`);
       return videoUrl;
       
     } catch (error) {
       this.updateMetrics(0, false);
       console.error('❌ Video generation failed:', error);
       
-      // 如果真实生成失败，提供有意义的错误信息
-      if (error instanceof Error && error.message.includes('API')) {
-        throw new Error('Video generation service unavailable. Please check API configuration.');
+      // 提供有意义的错误信息和解决建议
+      let errorMessage = 'Video generation failed. ';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('ffmpeg')) {
+          errorMessage += 'FFmpeg is not installed. Please run: ./install-ffmpeg.sh';
+        } else if (error.message.includes('API')) {
+          errorMessage += 'API service unavailable. Please check configuration.';
+        } else {
+          errorMessage += error.message;
+        }
+      } else {
+        errorMessage += 'Unknown error occurred.';
       }
       
-      throw new Error(`Failed to generate video: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(errorMessage);
     }
   }
 

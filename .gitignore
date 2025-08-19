@@ -1,6 +1,106 @@
-node_modules
-dist
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Server assets
 server/public
+
+# Config files
 vite.config.ts.*
+
+# Archives
 *.tar.gz
+*.zip
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+
+# Temporary folders
+tmp/
+temp/
+
+# Project specific uploads and generated files
+uploads/*.mp4
+uploads/*.mov
+uploads/*.avi
+uploads/*.webm
+uploads/*.gif
+uploads/*.jpg
+uploads/*.png
+uploads/*.svg
+uploads/fallback_*
+uploads/video_*
+uploads/animation_*
+uploads/test-*
+uploads/input_*
+uploads/processed_*
+
+# Keep upload directory structure
+!uploads/.gitkeep
+
+# Test reports and generated files
+*-test-*
+*-report.*
+test-*
+QUALITY-REPORT.md
+END-TO-END-REPORT.md
+ULTIMATE-QUALITY-REPORT.md
+quality-test-report.json
+end-to-end-report.json
+quality-test-runner.js
+end-to-end-test.js
+simple-server.js
+
+# Editor directories
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Package manager lockfiles
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Runtime files
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory
+coverage/
+.nyc_output/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.npm/
+
+# Replit specific
+.replit
+replit.nix
+.upm/
