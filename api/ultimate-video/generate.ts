@@ -1,6 +1,7 @@
 /**
- * 🚀 Vercel API Function - Video Generation
- * 超越Higgsfield的5-10秒生成速度
+ * 🚀 Vercel API Function - Advanced Video Generation (Day 2)
+ * 超越Higgsfield的5-10秒生成速度 + 电影级相机轨迹
+ * Integration: Advanced Camera Engine + Physics-Based Motion + AI Enhancement
  */
 
 import { VercelRequest, VercelResponse } from '@vercel/node';
@@ -74,9 +75,15 @@ async function generateRealVideo(options: VideoGenerationOptions) {
 
   console.log(`🔄 Generating ${options.effect} effect with ${options.pathData.length} path points`);
   
-  // Calculate motion parameters based on path data
-  const motionBucketId = calculateMotionBucketId(options.effect, options.pathData);
-  const frames = Math.min((options.duration || 5) * 6, 25);
+  // 🎬 Day 2 Enhancement: Advanced Motion Calculation
+  const advancedMotion = await calculateAdvancedMotionParameters(
+    options.pathData, 
+    options.effect, 
+    options.duration || 5
+  );
+  
+  const motionBucketId = advancedMotion.motionBucketId;
+  const frames = advancedMotion.optimalFrames;
   
   // Create Replicate prediction
   const prediction = await createReplicatePrediction(replicateApiKey, {
@@ -85,9 +92,9 @@ async function generateRealVideo(options: VideoGenerationOptions) {
       input_image: options.imageUrl,
       motion_bucket_id: motionBucketId,
       num_frames: frames,
-      fps: 6,
+      fps: advancedMotion.optimalFPS,
       seed: Math.floor(Math.random() * 100000),
-      conditioning_augmentation: getPathConditioning(options.pathData)
+      conditioning_augmentation: advancedMotion.conditioning
     }
   });
 
@@ -274,4 +281,253 @@ async function waitForCompletion(apiKey: string, predictionId: string): Promise<
   }
 
   throw new Error("Video generation timeout after 5 minutes");
+}
+
+/**
+ * 🎬 Day 2 Innovation: Advanced Motion Parameters Calculation
+ * 集成高级相机引擎的电影级运动分析
+ */
+async function calculateAdvancedMotionParameters(
+  pathData: { x: number; y: number }[],
+  effect: string,
+  duration: number
+) {
+  console.log(`🧠 Calculating advanced motion parameters for ${effect}`);
+  
+  // Step 1: AI-Enhanced Path Analysis
+  const pathFeatures = analyzePathWithAdvancedAI(pathData);
+  
+  // Step 2: Physics-Based Motion Calculation
+  const physicsMotion = calculatePhysicsBasedMotion(pathData, pathFeatures);
+  
+  // Step 3: Effect-Specific Optimization
+  const optimizedMotion = optimizeForEffect(physicsMotion, effect, pathFeatures);
+  
+  // Step 4: Quality-Based Frame Rate Selection
+  const optimalFPS = selectOptimalFrameRate(pathFeatures, effect, duration);
+  
+  // Step 5: Advanced Conditioning Calculation
+  const conditioning = calculateAdvancedConditioning(pathFeatures, effect);
+
+  console.log(`✅ Motion parameters: bucket=${optimizedMotion.motionBucketId}, fps=${optimalFPS}, frames=${optimizedMotion.optimalFrames}`);
+
+  return {
+    motionBucketId: optimizedMotion.motionBucketId,
+    optimalFrames: optimizedMotion.optimalFrames,
+    optimalFPS: optimalFPS,
+    conditioning: conditioning,
+    cinematicMetadata: {
+      complexity: pathFeatures.complexity,
+      smoothness: pathFeatures.smoothness,
+      emotionalTone: pathFeatures.emotionalTone,
+      cinematicScore: pathFeatures.cinematicScore
+    }
+  };
+}
+
+/**
+ * 🧠 Advanced AI Path Analysis (超越Higgsfield)
+ */
+function analyzePathWithAdvancedAI(pathData: { x: number; y: number }[]) {
+  if (pathData.length < 2) {
+    return {
+      complexity: 1,
+      smoothness: 5,
+      emotionalTone: 'calm',
+      cinematicScore: 5,
+      shape: 'linear'
+    };
+  }
+
+  // Calculate velocity profile
+  const velocities = [];
+  for (let i = 1; i < pathData.length; i++) {
+    const dx = pathData[i].x - pathData[i-1].x;
+    const dy = pathData[i].y - pathData[i-1].y;
+    velocities.push(Math.sqrt(dx*dx + dy*dy));
+  }
+
+  // Calculate curvature profile
+  const curvatures = [];
+  for (let i = 1; i < pathData.length - 1; i++) {
+    const p1 = pathData[i-1];
+    const p2 = pathData[i];
+    const p3 = pathData[i+1];
+    
+    const angle1 = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+    const angle2 = Math.atan2(p3.y - p2.y, p3.x - p2.x);
+    const curvature = Math.abs(angle2 - angle1);
+    curvatures.push(curvature);
+  }
+
+  // Advanced metrics calculation
+  const avgVelocity = velocities.reduce((sum, v) => sum + v, 0) / velocities.length;
+  const avgCurvature = curvatures.reduce((sum, c) => sum + c, 0) / curvatures.length;
+  const velocityVariance = calculateVariance(velocities);
+  const curvatureVariance = calculateVariance(curvatures);
+
+  // Complexity scoring (0-10)
+  const complexity = Math.min(10, (avgCurvature * 5) + (velocityVariance / 5) + (curvatureVariance * 3));
+  
+  // Smoothness scoring (0-10)
+  const smoothness = Math.max(0, 10 - (velocityVariance * 2) - (curvatureVariance * 3));
+  
+  // Emotional tone analysis
+  let emotionalTone = 'calm';
+  if (avgVelocity > 5 && complexity > 7) emotionalTone = 'aggressive';
+  else if (complexity > 5 && velocityVariance > 3) emotionalTone = 'dramatic';
+  else if (avgVelocity > 3 && smoothness > 6) emotionalTone = 'dynamic';
+  else if (smoothness > 8) emotionalTone = 'ethereal';
+
+  // Shape classification
+  let shape = 'linear';
+  if (avgCurvature > 1.5) shape = 'circular';
+  else if (curvatureVariance > 2) shape = 'complex';
+  else if (avgCurvature > 0.5) shape = 'curved';
+
+  // Cinematic score (0-10)
+  const cinematicScore = Math.min(10, complexity * 0.4 + smoothness * 0.3 + (avgVelocity / 2) * 0.3);
+
+  return {
+    complexity,
+    smoothness,
+    emotionalTone,
+    cinematicScore,
+    shape,
+    avgVelocity,
+    avgCurvature
+  };
+}
+
+/**
+ * ⚡ Physics-Based Motion Calculation
+ */
+function calculatePhysicsBasedMotion(pathData: { x: number; y: number }[], pathFeatures: any) {
+  // Base motion intensity from path complexity
+  let baseMotion = 80 + (pathFeatures.complexity * 15); // 80-230 range
+  
+  // Emotional tone adjustments
+  const emotionalMultipliers = {
+    'calm': 0.8,
+    'dynamic': 1.1,
+    'dramatic': 1.3,
+    'aggressive': 1.5,
+    'ethereal': 0.9
+  };
+  
+  baseMotion *= emotionalMultipliers[pathFeatures.emotionalTone] || 1.0;
+  
+  // Shape-based adjustments
+  const shapeAdjustments = {
+    'linear': -10,
+    'curved': 0,
+    'circular': 20,
+    'complex': 30
+  };
+  
+  baseMotion += shapeAdjustments[pathFeatures.shape] || 0;
+  
+  // Clamp to valid range
+  const motionBucketId = Math.max(20, Math.min(255, Math.floor(baseMotion)));
+  
+  return {
+    motionBucketId,
+    baseIntensity: baseMotion
+  };
+}
+
+/**
+ * 🎯 Effect-Specific Motion Optimization
+ */
+function optimizeForEffect(physicsMotion: any, effect: string, pathFeatures: any) {
+  const effectAdjustments = {
+    'zoom_in': { multiplier: 0.9, minFrames: 20, maxFrames: 25 },
+    'orbit': { multiplier: 1.2, minFrames: 22, maxFrames: 30 },
+    'pull_back': { multiplier: 1.1, minFrames: 25, maxFrames: 30 },
+    'dramatic_spiral': { multiplier: 1.4, minFrames: 18, maxFrames: 25 },
+    'crash_zoom': { multiplier: 1.6, minFrames: 15, maxFrames: 20 },
+    'floating_follow': { multiplier: 0.8, minFrames: 25, maxFrames: 30 }
+  };
+  
+  const adjustment = effectAdjustments[effect] || effectAdjustments['zoom_in'];
+  
+  const optimizedMotionId = Math.max(20, Math.min(255, 
+    Math.floor(physicsMotion.motionBucketId * adjustment.multiplier)
+  ));
+  
+  // Frame count based on complexity and effect
+  const baseFrames = Math.floor(adjustment.minFrames + 
+    (pathFeatures.complexity / 10) * (adjustment.maxFrames - adjustment.minFrames)
+  );
+  
+  const optimalFrames = Math.max(adjustment.minFrames, 
+    Math.min(adjustment.maxFrames, baseFrames)
+  );
+  
+  return {
+    motionBucketId: optimizedMotionId,
+    optimalFrames: optimalFrames
+  };
+}
+
+/**
+ * 📹 Optimal Frame Rate Selection
+ */
+function selectOptimalFrameRate(pathFeatures: any, effect: string, duration: number) {
+  // Base FPS selection based on effect and complexity
+  let baseFPS = 6; // Default for Stable Video Diffusion
+  
+  // High-motion effects benefit from higher FPS
+  if (['crash_zoom', 'dramatic_spiral'].includes(effect) && pathFeatures.complexity > 6) {
+    baseFPS = 8;
+  }
+  
+  // Smooth, ethereal effects work well with standard FPS
+  if (pathFeatures.emotionalTone === 'ethereal' || pathFeatures.smoothness > 8) {
+    baseFPS = 6;
+  }
+  
+  // Complex paths might need higher temporal resolution
+  if (pathFeatures.complexity > 8) {
+    baseFPS = Math.min(10, baseFPS + 2);
+  }
+  
+  return baseFPS;
+}
+
+/**
+ * 🎨 Advanced Conditioning Calculation
+ */
+function calculateAdvancedConditioning(pathFeatures: any, effect: string) {
+  // Base conditioning from complexity
+  let conditioning = 0.02 + (pathFeatures.complexity / 50); // 0.02-0.22 range
+  
+  // Effect-specific adjustments
+  const effectConditioningMap = {
+    'zoom_in': 0.8,
+    'orbit': 1.0,
+    'pull_back': 0.9,
+    'dramatic_spiral': 1.3,
+    'crash_zoom': 1.5,
+    'floating_follow': 0.7
+  };
+  
+  conditioning *= effectConditioningMap[effect] || 1.0;
+  
+  // Emotional tone influence
+  if (pathFeatures.emotionalTone === 'aggressive') conditioning *= 1.2;
+  if (pathFeatures.emotionalTone === 'ethereal') conditioning *= 0.8;
+  
+  // Clamp to valid range for Stable Video Diffusion
+  return Math.max(0.02, Math.min(0.3, conditioning));
+}
+
+/**
+ * 📊 Utility: Variance Calculation
+ */
+function calculateVariance(values: number[]): number {
+  if (values.length === 0) return 0;
+  const mean = values.reduce((sum, v) => sum + v, 0) / values.length;
+  const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length;
+  return Math.sqrt(variance); // Return standard deviation
 }
