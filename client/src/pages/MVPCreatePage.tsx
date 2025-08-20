@@ -401,7 +401,7 @@ export default function MVPCreatePage() {
     setCurrentStep("effect");
   };
 
-  const handleEffectSelect = (effect: CameraEffect) => {
+  const handleEffectSelect = (effect: UltimateCameraEffect) => {
     setSelectedEffect(effect);
   };
 
@@ -415,28 +415,88 @@ export default function MVPCreatePage() {
       return;
     }
 
+    if (!uploadedImage || drawnPaths.length === 0) {
+      toast({
+        title: "Missing required data",
+        description: "Please upload an image and draw a path",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setCurrentStep("processing");
     setProcessingProgress(0);
 
-    // 模拟AI视频生成过程（MVP要求：5-10秒）
-    const progressInterval = setInterval(() => {
-      setProcessingProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          setTimeout(() => {
-            // 生成示例视频URL
-            setVideoUrl("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
-            setCurrentStep("completed");
-            toast({
-              title: "Video generated successfully!",
-              description: "Your AI video is ready for download"
-            });
-          }, 1000);
-          return 100;
-        }
-        return prev + Math.random() * 12 + 8; // 随机进度，确保8-10秒完成
+    try {
+      // 🚀 REAL Video Generation using Ultimate Video API
+      console.log("🎬 Starting REAL video generation...");
+      
+      // Prepare path data from drawn paths
+      const pathData = drawnPaths.length > 0 
+        ? drawnPaths[0].points 
+        : [{ x: 0, y: 0 }, { x: 100, y: 100 }]; // fallback path
+
+      // Update progress
+      setProcessingProgress(10);
+
+      // Call the real video generation API
+      const response = await fetch('/api/ultimate-video/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageUrl: uploadedImage,
+          effect: selectedEffect,
+          pathData: pathData,
+          duration: 5,
+          quality: 'hd'
+        }),
       });
-    }, 500);
+
+      setProcessingProgress(40);
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error("API Error:", errorData);
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      setProcessingProgress(70);
+
+      if (!result.success) {
+        throw new Error(result.error || 'Video generation failed');
+      }
+
+      console.log("✅ Video generation successful:", result);
+
+      setProcessingProgress(100);
+
+      // Set the generated video URL
+      setVideoUrl(result.data.videoUrl);
+      setCurrentStep("completed");
+
+      toast({
+        title: result.isDemo ? "🎬 Demo video generated!" : "🎉 Video generated successfully!",
+        description: result.isDemo 
+          ? `${selectedEffect} effect analyzed from your path (${pathData.length} points). Add API token for custom generation.`
+          : `${selectedEffect} effect applied. Quality: ${result.data.analytics?.qualityScore?.toFixed(1)}/10`,
+      });
+
+    } catch (error) {
+      console.error("❌ Video generation failed:", error);
+      
+      setProcessingProgress(0);
+      setCurrentStep("effect"); // Go back to effect selection
+      
+      toast({
+        title: "❌ Video generation failed",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleDownload = () => {
