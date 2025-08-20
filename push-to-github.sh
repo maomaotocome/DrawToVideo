@@ -48,7 +48,7 @@ case $choice in
         fi
         
         # 创建替换文件
-        echo "***REMOVED_API_TOKEN***==>***REMOVED***" > /tmp/replace.txt
+        echo "your_api_token_here==>***REMOVED***" > /tmp/replace.txt
         
         # 执行历史清理
         git filter-repo --replace-text /tmp/replace.txt --force
