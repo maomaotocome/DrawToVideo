@@ -40,7 +40,7 @@ fi
 # 检查环境变量
 if [ ! -f ".env" ]; then
     echo "⚠️  未找到.env文件，创建环境变量文件..."
-    echo "REPLICATE_API_TOKEN=***REMOVED***" > .env
+    echo "REPLICATE_API_TOKEN=your_replicate_api_token_here" > .env
     echo "✅ 环境变量文件创建完成"
 fi
 

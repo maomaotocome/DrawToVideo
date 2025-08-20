@@ -111,7 +111,7 @@ curl https://your-domain.vercel.app/api/ultimate-video/generate
    ```bash
    # 测试Replicate连接
    curl -X POST "https://api.replicate.com/v1/predictions" \
-   -H "Authorization: Token ***REMOVED***" \
+   -H "Authorization: Token your_replicate_api_token_here" \
    -H "Content-Type: application/json" \
    -d '{"version":"5f0af177b649ad5c2fbdce5d32db4b2e4ccd6b52","input":{"input_image":"https://example.com/image.jpg"}}'
    ```
@@ -125,7 +125,7 @@ curl https://your-domain.vercel.app/api/ultimate-video/generate
 
 3. **环境变量设置** (Vercel Dashboard)
    ```
-   REPLICATE_API_TOKEN=***REMOVED***
+   REPLICATE_API_TOKEN=your_replicate_api_token_here
    NODE_ENV=production
    ```
 
