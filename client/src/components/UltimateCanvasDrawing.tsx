@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
-import { Undo, RotateCcw, Play, Eye, MousePointer2, Palette } from "lucide-react";
+import { Undo, RotateCcw, Play, Eye, MousePointer2, Palette, Monitor, Zap } from "lucide-react";
 import { PathPoint } from "@shared/ultimateSchema";
+import { useRealTimePreview } from "@/hooks/useRealTimePreview";
+import { RealTimePreview } from "@/components/RealTimePreview";
 
 interface UltimateCanvasDrawingProps {
   imageUrl: string;
@@ -47,6 +49,10 @@ export function UltimateCanvasDrawing({
   const [brushSize, setBrushSize] = useState([3]);
   const [showPreview, setShowPreview] = useState(true);
   const [pathOpacity, setPathOpacity] = useState([0.8]);
+  const [showRealTimePreview, setShowRealTimePreview] = useState(false);
+
+  // 🎥 Day 3 Innovation: Real-Time Preview Integration
+  const realTimePreview = useRealTimePreview(pathData, selectedEffect);
 
   // Initialize canvas
   useEffect(() => {
@@ -363,13 +369,14 @@ export function UltimateCanvasDrawing({
           )}
         </div>
 
-        {/* Drawing Toolbar */}
-        <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-          <div className="flex items-center gap-4">
+        {/* 📱 Mobile-First Drawing Toolbar */}
+        <div className="bg-gray-50 p-3 sm:p-4 rounded-lg space-y-4">
+          {/* Mobile: Sliders Section */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Brush Size */}
-            <div className="flex items-center gap-2 min-w-32">
+            <div className="flex items-center gap-2">
               <Palette className="w-4 h-4 text-gray-600" />
-              <span className="text-sm text-gray-600">Brush Size</span>
+              <span className="text-sm text-gray-600 min-w-16">Brush</span>
               <Slider
                 value={brushSize}
                 onValueChange={setBrushSize}
@@ -379,13 +386,13 @@ export function UltimateCanvasDrawing({
                 className="flex-1"
                 disabled={isGenerating}
               />
-              <span className="text-xs text-gray-500 min-w-6">{brushSize[0]}</span>
+              <span className="text-xs text-gray-500 min-w-8 text-center">{brushSize[0]}</span>
             </div>
 
             {/* Opacity */}
-            <div className="flex items-center gap-2 min-w-32">
+            <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-gray-600" />
-              <span className="text-sm text-gray-600">Opacity</span>
+              <span className="text-sm text-gray-600 min-w-16">Opacity</span>
               <Slider
                 value={pathOpacity}
                 onValueChange={setPathOpacity}
@@ -395,20 +402,36 @@ export function UltimateCanvasDrawing({
                 className="flex-1"
                 disabled={isGenerating}
               />
-              <span className="text-xs text-gray-500 min-w-8">{Math.round(pathOpacity[0] * 100)}%</span>
+              <span className="text-xs text-gray-500 min-w-8 text-center">{Math.round(pathOpacity[0] * 100)}%</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Mobile: Button Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowPreview(!showPreview)}
               disabled={isGenerating}
-              className={showPreview ? "bg-blue-50 border-blue-300" : ""}
+              className={`${showPreview ? "bg-blue-50 border-blue-300" : ""} touch-manipulation`}
             >
-              <Eye className="w-4 h-4 mr-1" />
-              Preview
+              <Eye className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">Preview</span>
+            </Button>
+
+            {/* 🎥 Mobile-Optimized Real-Time Preview Toggle */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowRealTimePreview(!showRealTimePreview)}
+              disabled={isGenerating || pathData.length < 2}
+              className={`${showRealTimePreview ? "bg-purple-50 border-purple-300" : ""} touch-manipulation`}
+            >
+              <Monitor className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">Live</span>
+              {realTimePreview.isAnalyzing && (
+                <Zap className="w-3 h-3 ml-1 animate-pulse text-yellow-500" />
+              )}
             </Button>
 
             <Button
@@ -416,9 +439,10 @@ export function UltimateCanvasDrawing({
               size="sm"
               onClick={undoLastPoint}
               disabled={pathData.length === 0 || isGenerating}
+              className="touch-manipulation"
             >
-              <Undo className="w-4 h-4 mr-1" />
-              Undo
+              <Undo className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">Undo</span>
             </Button>
 
             <Button
@@ -426,22 +450,23 @@ export function UltimateCanvasDrawing({
               size="sm"
               onClick={clearPath}
               disabled={pathData.length === 0 || isGenerating}
+              className="touch-manipulation"
             >
-              <RotateCcw className="w-4 h-4 mr-1" />
-              Clear
+              <RotateCcw className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">Clear</span>
             </Button>
           </div>
         </div>
 
-        {/* Path Statistics */}
+        {/* 📱 Mobile-Optimized Path Statistics */}
         {pathData.length > 0 && (
-          <div className="grid grid-cols-3 gap-4 p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
             <div className="text-center">
-              <p className="text-2xl font-bold text-purple-600">{pathData.length}</p>
-              <p className="text-xs text-gray-600">Path Points</p>
+              <p className="text-xl sm:text-2xl font-bold text-purple-600">{pathData.length}</p>
+              <p className="text-xs text-gray-600">Points</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-xl sm:text-2xl font-bold text-blue-600">
                 {Math.round(Math.sqrt(
                   Math.pow(pathData[pathData.length - 1]?.x - pathData[0]?.x, 2) +
                   Math.pow(pathData[pathData.length - 1]?.y - pathData[0]?.y, 2)
@@ -450,11 +475,91 @@ export function UltimateCanvasDrawing({
               <p className="text-xs text-gray-600">Distance</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">
+              <p className="text-xl sm:text-2xl font-bold text-green-600">
                 {pathData.length > 1 ? Math.round((pathData[pathData.length - 1].timestamp! - pathData[0].timestamp!) / 1000 * 10) / 10 : 0}s
               </p>
               <p className="text-xs text-gray-600">Duration</p>
             </div>
+            {/* 🎯 Real-Time Quality Score */}
+            {realTimePreview.analysis && (
+              <div className="text-center">
+                <p className="text-xl sm:text-2xl font-bold text-orange-600">
+                  {realTimePreview.qualityPrediction.toFixed(1)}
+                </p>
+                <p className="text-xs text-gray-600">Quality</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 🎥 Day 3 Innovation: Real-Time Preview System */}
+        {showRealTimePreview && pathData.length > 1 && (
+          <div className="mt-6">
+            <RealTimePreview
+              pathData={pathData}
+              selectedEffect={selectedEffect}
+              imageUrl={imageUrl}
+              onQualityUpdate={(score) => {
+                // Handle quality updates if needed
+                console.log('Quality updated:', score);
+              }}
+              onRecommendationUpdate={(recommendations) => {
+                // Handle recommendation updates if needed
+                console.log('Recommendations updated:', recommendations);
+              }}
+            />
+          </div>
+        )}
+
+        {/* 📊 Mobile-Optimized Quick Analysis Summary */}
+        {realTimePreview.analysis && pathData.length > 5 && (
+          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-3 sm:p-4 rounded-lg border border-indigo-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
+              <h3 className="font-semibold text-indigo-900 flex items-center">
+                <Zap className="w-4 h-4 mr-2" />
+                Live Analysis
+              </h3>
+              <Badge variant="outline" className="bg-indigo-100 text-indigo-700 self-start sm:self-auto">
+                {realTimePreview.analysis.confidence.toFixed(0)}% Confidence
+              </Badge>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-sm">
+              <div className="text-center bg-white/50 rounded p-2">
+                <div className="font-bold text-base sm:text-lg text-blue-600">
+                  {realTimePreview.analysis.complexity.toFixed(1)}
+                </div>
+                <div className="text-gray-600 text-xs">Complexity</div>
+              </div>
+              <div className="text-center bg-white/50 rounded p-2">
+                <div className="font-bold text-base sm:text-lg text-green-600">
+                  {realTimePreview.analysis.smoothness.toFixed(1)}
+                </div>
+                <div className="text-gray-600 text-xs">Smoothness</div>
+              </div>
+              <div className="text-center bg-white/50 rounded p-2">
+                <div className="font-bold text-base sm:text-lg text-purple-600">
+                  {realTimePreview.analysis.viralPotential.toFixed(1)}
+                </div>
+                <div className="text-gray-600 text-xs">Viral Score</div>
+              </div>
+              <div className="text-center bg-white/50 rounded p-2">
+                <div className="font-bold text-base sm:text-lg text-orange-600">
+                  ~{realTimePreview.estimatedGenerationTime}s
+                </div>
+                <div className="text-gray-600 text-xs">Est. Time</div>
+              </div>
+            </div>
+
+            {/* Smart Recommendations */}
+            {realTimePreview.analysis.recommendations && realTimePreview.analysis.recommendations.length > 0 && (
+              <div className="mt-3 p-3 bg-white/70 rounded border-l-4 border-blue-400">
+                <div className="text-sm font-medium text-blue-900 mb-1">💡 Smart Tip:</div>
+                <div className="text-sm text-blue-800">
+                  {realTimePreview.analysis.recommendations[0]}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://drawtovideo.com/sitemap.xml
+
+# DrawToVideo - AI Video Generation from Sketches
+# Faster than Higgsfield, Better than Runway
+# Zero prompts, Instant results

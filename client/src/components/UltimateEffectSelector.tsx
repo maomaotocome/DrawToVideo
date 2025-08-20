@@ -118,7 +118,7 @@ export function UltimateEffectSelector({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {ULTIMATE_EFFECTS.map((effect) => {
           const IconComponent = effect.icon;
           const isSelected = selectedEffect === effect.id;
@@ -127,15 +127,15 @@ export function UltimateEffectSelector({
           return (
             <Card 
               key={effect.id}
-              className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
+              className={`cursor-pointer transition-all duration-300 hover:scale-105 touch-manipulation ${
                 isSelected ? 'ring-2 ring-primary shadow-lg' : ''
               } ${isDisabled ? 'opacity-50' : ''}`}
               onClick={() => !isDisabled && onEffectChange(effect.id)}
             >
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
                 <div className="flex items-center justify-between">
-                  <div className={`${effect.color} p-2 rounded-lg`}>
-                    <IconComponent className="w-5 h-5 text-white" />
+                  <div className={`${effect.color} p-1.5 sm:p-2 rounded-lg`}>
+                    <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div className="flex gap-1">
                     {effect.isNew && (
@@ -151,14 +151,14 @@ export function UltimateEffectSelector({
                   </div>
                 </div>
                 
-                <CardTitle className="text-lg">{effect.name}</CardTitle>
-                <CardDescription className="text-sm">
+                <CardTitle className="text-base sm:text-lg">{effect.name}</CardTitle>
+                <CardDescription className="text-xs sm:text-sm line-clamp-2">
                   {effect.description}
                 </CardDescription>
               </CardHeader>
               
-              <CardContent className="pt-0">
-                <div className="space-y-2">
+              <CardContent className="pt-0 p-3 sm:p-6 sm:pt-0">
+                <div className="space-y-1.5 sm:space-y-2">
                   <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">Difficulty:</span>
                     <Badge 
@@ -175,7 +175,7 @@ export function UltimateEffectSelector({
                   </div>
                   
                   <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Optimized for:</span>
+                    <span className="text-muted-foreground">Platform:</span>
                     <span className="font-medium">{effect.socialPlatform}</span>
                   </div>
                   
@@ -188,11 +188,11 @@ export function UltimateEffectSelector({
                 </div>
 
                 {isDisabled && (
-                  <div className="mt-3">
+                  <div className="mt-2 sm:mt-3">
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-none hover:from-yellow-500 hover:to-orange-600"
+                      className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-none hover:from-yellow-500 hover:to-orange-600 touch-manipulation"
                     >
                       Upgrade to Pro
                     </Button>

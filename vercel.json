@@ -14,6 +14,12 @@
     },
     "api/ultimate-video/effects.ts": {
       "runtime": "nodejs18.x"
+    },
+    "api/ultimate-video/real-time-preview.ts": {
+      "runtime": "nodejs18.x"
+    },
+    "api/ultimate-video/social-share.ts": {
+      "runtime": "nodejs18.x"
     }
   },
   "rewrites": [
@@ -28,6 +34,14 @@
     {
       "source": "/api/ultimate-video/effects",
       "destination": "/api/ultimate-video/effects"
+    },
+    {
+      "source": "/api/ultimate-video/real-time-preview",
+      "destination": "/api/ultimate-video/real-time-preview"
+    },
+    {
+      "source": "/api/ultimate-video/social-share",
+      "destination": "/api/ultimate-video/social-share"
     },
     {
       "source": "/((?!api).*)",
