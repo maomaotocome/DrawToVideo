@@ -7,7 +7,7 @@
   "framework": null,
   "functions": {
     "api/**/*.ts": {
-      "runtime": "@vercel/node@3.0.0",
+      "runtime": "nodejs18.x",
       "maxDuration": 300,
       "memory": 1024
     }
@@ -59,5 +59,10 @@
   ],
   "env": {
     "NODE_ENV": "production"
+  },
+  "build": {
+    "env": {
+      "VERCEL_NODEJS_VERSION": "18.x"
+    }
   }
 }
