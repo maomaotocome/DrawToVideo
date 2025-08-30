@@ -1,68 +1,20 @@
 {
-  "version": 2,
-  "name": "drawtovideo",
   "buildCommand": "npm run build:client",
   "outputDirectory": "dist/public",
   "installCommand": "npm install --legacy-peer-deps",
-  "framework": null,
   "functions": {
     "api/**/*.ts": {
-      "runtime": "@vercel/node@3.0.21",
-      "maxDuration": 300,
-      "memory": 1024
+      "runtime": "@vercel/node@20.x"
     }
   },
   "rewrites": [
     {
-      "source": "/api/ultimate-video/generate",
-      "destination": "/api/ultimate-video/generate"
-    },
-    {
-      "source": "/api/ultimate-video/analyze-path", 
-      "destination": "/api/ultimate-video/analyze-path"
-    },
-    {
-      "source": "/api/ultimate-video/effects",
-      "destination": "/api/ultimate-video/effects"
-    },
-    {
-      "source": "/api/ultimate-video/real-time-preview",
-      "destination": "/api/ultimate-video/real-time-preview"
-    },
-    {
-      "source": "/api/ultimate-video/social-share",
-      "destination": "/api/ultimate-video/social-share"
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     },
     {
       "source": "/((?!api).*)",
       "destination": "/index.html"
     }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods", 
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        }
-      ]
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "build": {
-    "env": {
-      "VERCEL_NODEJS_VERSION": "18.x"
-    }
-  }
+  ]
 }
