@@ -118,7 +118,7 @@ export function AuthGate({ onLogin }: AuthGateProps) {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="w-full border-gray-600 text-white hover:bg-gray-800"
+                    className="w-full border-gray-600 bg-transparent text-gray-900 dark:text-white hover:bg-gray-800 hover:text-white"
                     onClick={onLogin}
                   >
                     <MousePointer className="w-5 h-5 mr-2" />
